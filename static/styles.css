@@ -1,0 +1,184 @@
+/*** Styles for all html files ***/
+
+html, body {
+    height: 100%;
+}
+
+body {
+    padding-top: 3.5rem;
+    font-weight: 300;
+    /* University of Aberdeen Library. Credit: jisc.ac.uk */
+    background-image: url("../static/lib1.jpg");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.background-img {
+    background-color: none;
+}
+
+.section-divider {
+    margin: 2rem 0;
+}
+
+.dropdown-toggle {
+    width: 100px;
+    text-align: left;
+}
+
+/* Links that aren't formatted as buttons */
+a:not([role=button]), a:not([role=button]):focus, a:not([role=button]):visited {
+    color: #17a2b8;
+}
+
+a:not([role=button]):hover {
+    color: #138496;
+}
+
+a:not([role=button]):active {
+    color:#117888;
+}
+
+button.btn.dropdown-toggle.btn-outline-info {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* Very specific override to make sure that specificity is enough */
+.bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
+    width: 110px;
+}
+
+/* Making lines in collapsed navbar button blue */
+.navbar-light .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(23, 162, 184, 1)' stroke-width='1.5' stroke-linecap='round' stroke-miterlimit='0' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+@media (max-width: 575.98px) {
+    .sm-hide {
+        display: none;              /* Hide footer when it would be crushed down too small */
+    }
+}
+
+@media (max-width: 777px) {
+    #main-header {
+        font-size: 2.5rem;
+    }
+}
+
+/* Navbar updating code - would be good to refactor if possible */
+.blue-white-nav {
+    background-color: white;
+    border-bottom: 1px solid #17a2b8;
+}
+
+.blue-white-nav .navbar-brand {
+    font-size: 1.1rem;
+}
+
+.blue-white-nav .nav-item {
+    font-size: 0.9rem;
+}
+
+.transparent-nav {
+    background-color: transparent;
+    border-bottom: none;
+}
+
+.transparent-nav .navbar-brand {
+    font-size: 1.25rem;
+}
+
+.transparent-nav .nav-item {
+    font-size: 1rem;
+}
+
+/* Navbar shape transition */
+.blue-white-nav, .transparent-nav {
+    -webkit-transition: all 0.4s;
+    transition: all 0.4s;
+}
+
+/* Navbar font transition */
+.navbar-brand, .nav-item {
+    -webkit-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+/*** General styles for index page (slider below) ***/
+
+.btn-info-white {
+    background-color: white;
+}
+
+.jumbotron {
+    background: none;
+}
+
+.jumbotron.index {
+    min-height: 60vh;
+    display: flex;
+    align-items: flex-end;
+}
+
+div.white-bg {
+    background-color: white;
+    padding-top: 30px;
+}
+
+#quick-search {
+    font-size: 2rem;
+}
+
+/*** Styles for sign in page ***/
+
+.prepend-icon {
+    width: 40px;
+}
+
+.padded-button {
+    margin: 20px 0;
+}
+
+.sign-in-form {
+    width: 100%;
+    max-width: 350px;
+    margin: auto;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+/*** Slick sliders ***/
+
+.slide {
+    text-align: center;
+    color: #419be0;
+    background: white;
+}
+
+.slick-prev::before, .slick-next::before {
+    color: #17a2b8;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.slick-prev:hover::before, .slick-next:hover::before {
+    color: #138496;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.slick-prev:active::before, .slick-next:active::before {
+    color: #117888;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.slick-next {
+    right: 15px;
+    z-index: 5;
+}
+
+.slick-prev {
+    left: 15px;
+    z-index: 5;
+}

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Site made by Emily Flynn using Bootstrap templates">
+        <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+        <title>Softwire Library</title>
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <!-- Slick CSS -->
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css"/>
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.0/css/all.css" integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y" crossorigin="anonymous">
+
+        <!-- Custom CSS -->
+        <link href="../static/styles.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-md navbar-light fixed-top blue-white">
+            <a class="navbar-brand" href="#">Softwire Library</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active"><a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Search</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main role="main">
+
+            <div class="container text-center" style="padding-top: 120px">
+                <h2 class="display-4" id="quick-search">Please sign in to view your account.</h2>
+
+                <form class="sign-in-form">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text prepend-icon" id="basic-addon1"><i class="fas fa-user-alt"></i></span>
+                        </div>
+                        <input type="text" name="firstName" placeholder="Your first name" aria-label="First name" class="form-control" required>
+                        <input type="text" name="lastName" placeholder="Your surname" aria-label="Last name" class="form-control" required>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text prepend-icon" id="basic-addon1"><i class="far fa-envelope"></i></span>
+                        </div>
+                        <input type="text" class="form-control" name="emailAddr" placeholder="Your email" aria-label="Email" aria-describedby="basic-addon1" required>
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text prepend-icon" id="basic-addon1"><i class="fas fa-home"></i></span>
+                        </div>
+                        <input type="text" class="form-control" name="postcode" placeholder="Your postcode" aria-label="Postcode" aria-describedby="basic-addon1" required>
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text prepend-icon" id="basic-addon1"><i class="fas fa-hashtag"></i></span>
+                        </div>
+                        <input type="text" class="form-control" name="cardNo" placeholder="Library card number" aria-label="Library card number" aria-describedby="basic-addon1" required>
+                    </div>
+                    <button type="submit" class="btn btn-lg btn-outline-info padded-button">Sign in</button>
+                    <p class="form-text text-muted">Don't have an account yet?<br><a href="#" class="blue-link">Create one here.</a><br>(You will need your library card number.)</p>
+                </form>
+
+                <hr class="sm-hide">
+
+            </div>
+
+        </main>
+
+        <footer class="container sm-hide">
+            <div class="row">
+                <div class="col-sm">
+                    <p class="lead">Softwire Library</p>
+                    <p>
+                        10 Main Street<br>
+                        Large Park<br>
+                        London AB1 2CD
+                    </p>
+                </div>
+                <div class="col-sm text-right">
+                    <p class="lead">020 7891 2345</p>
+                    <p>
+                        Opening hours:<br>
+                        Monday&ndash;Friday 09:00 &ndash; 17:00<br>
+                        Saturday 09:00 &ndash; 13:00
+                    </p>
+                </div>
+            </div>
+        </footer>
+
+        <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    </body>
+</html>

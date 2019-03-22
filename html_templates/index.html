@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Site made by Emily Flynn using Bootstrap templates">
+        <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+        <title>Softwire Library</title>
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <!-- Slick CSS -->
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css"/>
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.0/css/all.css" integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y" crossorigin="anonymous">
+        
+        <!-- Custom CSS -->
+        <link href="../static/styles.css" rel="stylesheet">
+    </head>
+
+    <body>
+    <div class="background-img">
+        <nav class="navbar navbar-expand-md navbar-light fixed-top transparent-nav" id="top-nav">
+            <span class="navbar-brand" href="#">Softwire Library</span>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active"><a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Search</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main role="main">
+
+            <div class="jumbotron index" id="fading-images">
+                <div class="container">
+                    <h1 class="display-4">Welcome to the Softwire Library website</h1>
+                    <p><a class="btn btn-outline-info btn-info-white" href="#" role="button">Go to my account &raquo;</a></p>
+                </div>
+            </div>
+
+            <div class="white-bg">
+
+            <div class="container">
+                <h2 class="display-4" id="quick-search">Quick search all books</h2>
+                <form>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-outline-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Publisher</button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#">Author</a>
+                                <a class="dropdown-item" href="#">Publisher</a>
+                                <a class="dropdown-item" href="#">ISBN</a>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                        <div class="input-group-append">
+                            <button class="btn btn-info" type="submit">&nbsp;Go&nbsp;</button>
+                        </div>
+                    </div>
+                </form>
+                
+                <hr class="section-divider">
+
+                <div class="your-class" style="margin-bottom: 50px">
+                    <div class="slide"><p>your content</p></div>
+                    <div class="slide"><p>your content</p></div>
+                    <div class="slide"><p>your content</p></div>
+                    <div class="slide"><p>your content</p></div>
+                    <div class="slide"><p>your content</p></div>
+                    <div class="slide"><p>your content</p></div>
+                </div>
+
+                <hr class="sm-hide">
+
+            </div> <!-- /container -->
+
+            <footer class="container sm-hide">
+                <div class="row">
+                    <div class="col-sm">
+                        <p class="lead">Softwire Library</p>
+                        <p>
+                            10 Main Street<br>
+                            Large Park<br>
+                            London AB1 2CD
+                        </p>
+                    </div>
+                    <div class="col-sm text-right">
+                        <p class="lead">020 7891 2345</p>
+                        <p>
+                            Opening hours:<br>
+                            Monday&ndash;Friday 09:00 &ndash; 17:00<br>
+                            Saturday 09:00 &ndash; 13:00
+                        </p>
+                    </div>
+                </div>
+            </footer>
+
+            </div>
+
+        </main>
+
+        <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
+    
+        <script type="text/javascript">
+
+            // Set up slick carousel
+            $('.your-class').slick({
+                centerMode: true,
+                centerPadding: '60px',
+                dots: true,
+                slidesToShow: 3,
+                slidesToScroll: 1,
+            });
+
+            // Alter background scrolling speed
+            (function(){
+                var parallax = document.querySelectorAll("body"),
+                    speed = 0.5;
+                window.onscroll = function() {
+                    [].slice.call(parallax).forEach(function(el, i) {
+                        var windowYOffset = window.pageYOffset,
+                            elBackgroundPos = "50% " + (windowYOffset * speed) + "px";
+                        el.style.backgroundPosition = elBackgroundPos;
+                    });
+                };
+            })();
+
+            // Navbar smoothly change properties
+            window.onscroll = function () {
+                var topnav = document.getElementById('top-nav');
+                if (window.pageYOffset < 10) {
+                    if (topnav.classList.contains('blue-white-nav')) {
+                        topnav.classList.add('transparent-nav');
+                        topnav.getElementById('top-nav').classList.remove('blue-white-nav');
+                    }
+                }
+                else if (topnav.classList.contains('transparent-nav')) {
+                    topnav.classList.add('blue-white-nav');
+                    topnav.classList.remove('transparent-nav');
+                }
+            }
+
+        </script>
+    </div>
+    </body>
+</html>
