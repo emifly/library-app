@@ -29,11 +29,20 @@
                 </form>
                 
                 <hr class="section-divider">
-
-                % for element in results:
-                    <li></li>
-                    <hr class="section-divider">
+                
+                <div class="list-group">
+                % for i in range(1, 5):
+                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Resource name {{ i }}</h5>
+                            <small class="text-muted text-right">Online Resource<br><i class="fas fa-desktop"></i></small>
+                        </div>
+                        <p class="mb-1">Names of authors; Potentially multiple quite long names</p>
+                        <small class="text-muted">Publisher, location, year published</small>
+                    </a>
                 % end
+                
+                </div>
 
             </div> <!-- /container -->
 

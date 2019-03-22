@@ -260,7 +260,7 @@ def display_signup():
             errorVal = True if str(request.query['error']) == 'True' else False
         return template('signup', error=errorVal)
 
-### Confirm sign-up page. Actions: 
+### Confirm sign-up page - DONE. Actions: 
 #### - Send new user back to sign in page where they can use their new details
 @post('/confirmation')
 def display_confirmation(db):
@@ -299,8 +299,9 @@ def display_signout():
     else:
         return redirect('/')
 
-### Search page
+### Search page. Actions:
 #### - Send form data via get request to same location, use this to display results
+#### - Send get request to individual item pages via get request based on what happens when
 @get('/search')
 def display_search(db):
     results = []
