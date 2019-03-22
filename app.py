@@ -170,51 +170,58 @@ def serve_static(file):
 ### Homepage - DONE
 @get('/')
 def display_homepage():
-    buttontext = "Sign in"
-    return template('index', indexpage=True, dispsignin=True, buttontext=buttontext)
+    buttonText = "My account" if request.get_cookie("id") else "Sign in"
+    signOutBtn = True if request.get_cookie("id") else False
+    return template('index', indexpage=True, dispsignin=True, buttontext=buttonText, signout=signOutBtn)
 
 ### Sign-in page. Actions:
 #### - Validate user details and send them via post request to their account page
 @post('/signin')
 def display_signin_post(db):
     # Check if user is signed in
-    userId = response.get_cookie("id")
+    userId = request.get_cookie("id")
     if userId:
         return redirect('/account')
     else:
-        # completing original form
+        # Check if there is the expected post data
         if 'firstName' in request.forms:
             fname = request.forms.get('firstName')
             lname = request.forms.get('lastName')
             email = request.forms.get('emailAddr')
             pcode = request.forms.get('postcode')
             cardNo = request.forms.get('cardNo')
-            # If they did, check if they made an error filling in the form
-            id = db.execute("SELECT * FROM GenUser WHERE (firstName, lastName, emailAddr, postcode) = (?, ?, ?, ?)", (fname, lname, email, pcode)).fetchone()[0]
-            if id > 0:
-                # Work out if their personal details match their library card number
-                publicId = db.execute("SELECT * FROM PublicUser WHERE (userId) = (?)", (id)).fetchone()[0]
-                if publicId == cardNo:
-                    response.set_cookie("id", str(id))
-                    return redirect('/account')
-                # Otherwise, there was a conflict in the details, so display error
-                else:
-                    return template('signin', error=True)
-            else:
+            # Check if they made an error filling in the form
+            idRow = db.execute("SELECT * FROM GenUser WHERE (firstName, lastName, emailAddr, postcode) = (?, ?, ?, ?)", (fname, lname, email, pcode)).fetchone()
+            if idRow == None:
                 # No row with the right details was found, so display error
                 return template('signin', error=True)
+            else:
+                id = idRow[0]
+                publicIdRow = db.execute("SELECT * FROM PublicUser WHERE (cardNo) = (?)", (cardNo,)).fetchone()
+                # Check if there is an entry in PublicUser corresponding to the id
+                if publicIdRow == None:
+                    return template('signin', error=True)
+                else:
+                    # If there is an entry, work out if their personal details match their library card number
+                    userId = publicIdRow['userId']
+                    if userId == id:
+                        response.set_cookie("id", str(id))
+                        return redirect('/account')
+                    # Otherwise, there was a conflict in the details, so display error
+                    else:
+                        return template('signin', error=True)                
         # Would be strange not to have any relevant post data, but if so, serve empty form as normal
         else:
-            return template('signin', error=False)
+            return template('signin', error=True)
 @get('/signin')
 def display_signin_get(db):
     # Check if user already signed in
-    userId = response.get_cookie("id")
-    if userId:
+    userId = request.get_cookie("id")
     # If yes, redirect to account page
+    if userId:
         return redirect('/account')
-    else:
     # If no, serve empty form as normal
+    else:
         return template('signin', error=False)
 
 ### Account page. Actions:
@@ -230,10 +237,17 @@ def display_account_details(db):
 #### - Send new user details via post request to confirmation page
 @get('/signup')
 def display_signup():
-    errorVal = False
-    if 'error' in request.query:
-        errorVal = str(request.query['error'])
-    return template('signup', error=errorVal)
+    # Check if user already signed up
+    userId = request.get_cookie("id")
+    # If yes, redirect to account page
+    if userId:
+        return redirect('/account')
+    # Otherwise, display sign up page as normal
+    else:
+        errorVal = False
+        if 'error' in request.query:
+            errorVal = True if str(request.query['error']) == 'True' else False
+        return template('signup', error=errorVal)
 
 ### Confirm sign-up page. Actions: 
 #### - Send new user back to sign in page where they can use their new details
@@ -245,9 +259,9 @@ def display_confirmation(db):
     pcode = request.forms.get('postcode')
     cardNo = request.forms.get('cardNo')
     # Check if there is already an account associated with this library card number
-    check = db.execute("SELECT * FROM PublicUser WHERE (cardNo) = (?)", cardNo).fetchOne()[0]
-    if True:
-        return redirect('/signup?error=1')
+    check = db.execute("SELECT * FROM PublicUser WHERE (cardNo) = (?)", (cardNo,)).fetchone()
+    if check != None:
+        return redirect('/signup?error=True')
     else:
         # Add details to database
         db.execute("INSERT INTO GenUser (firstName, lastName, emailAddr, postcode) VALUES (?, ?, ?, ?);", (fname, lname, email, pcode))
@@ -256,14 +270,32 @@ def display_confirmation(db):
         dateEntry = int(date.today().strftime('%Y%m%d'))
         db.execute("INSERT INTO PublicUser (cardNo, regDate, userId) VALUES (?, ?, ?);", (cardNo, dateEntry, newRowId))
         return template('confirmation', firstName=fname)
+# Redirect to home if anyone tries to access this page via get request
+@get('/confirmation')
+def redirect_confirmation(db):
+    return redirect('/')
+
+### Sign-out page - DONE. Actions: 
+#### - Sign user out
+@get('/signout')
+def display_signout():
+    isSignedIn = request.get_cookie("id")
+    # If signed in, sign out and display confirmation that this has happened
+    if isSignedIn:
+        response.delete_cookie("id")
+        return template('signout')
+    # Otherwise, redirect to home
+    else:
+        return redirect('/')
 
 ### Search page
 #### - Send form data via get request to same location, use this to display results
 @get('/search')
 def display_search(db):
     results = []
-    buttontext = "Sign in"
-    return template('search', searchpage=True, dispsignin=True, buttontext=buttontext, results=results)
+    buttonText = "My account" if request.get_cookie("id") else "Sign in"
+    signOutBtn = True if request.get_cookie("id") else False
+    return template('search', searchpage=True, dispsignin=True, buttontext=buttonText, signout=signOutBtn, results=results)
 
 ### Contact page
 @get('/contact')

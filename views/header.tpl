@@ -30,7 +30,6 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarsExampleDefault">
                 <ul class="navbar-nav mr-auto">
                     % if 'indexpage' in globals():
@@ -53,6 +52,11 @@
                 </ul>
                 % if 'dispsignin' in globals():
                     <a role="button" id="nav-btn" class="btn btn-outline-info my-2 my-sm-0 sm-hide" href="/account">{{ buttontext }}</a>
+                % end
+                % if 'signout' in globals():
+                    % if signout == True:
+                        <a role="button" id="signout-btn" class="btn btn-outline-info my-2 my-sm-0 sm-hide" href="/signout">Sign out</a>
+                    % end
                 % end
             </div>
         </nav>

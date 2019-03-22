@@ -48,13 +48,16 @@
             // Navbar smoothly change properties
             window.onscroll = function () {
                 var topnav = document.getElementById('top-nav');
-                var topbtn = document.getElementById('nav-btn')
+                var topbtn = document.getElementById('nav-btn');
+                var signoutbtn = document.getElementById('signout-btn');
                 if (window.pageYOffset < 10) {
                     if (topnav.classList.contains('blue-white-nav')) {
                         topnav.classList.add('transparent-nav');
                         topnav.classList.remove('blue-white-nav');
                         topbtn.classList.add('btn-outline-info');
                         topbtn.classList.remove('btn-info');
+                        signoutbtn.classList.add('btn-outline-info');
+                        signoutbtn.classList.remove('btn-info');
                     }
                 }
                 else if (topnav.classList.contains('transparent-nav')) {
@@ -62,6 +65,8 @@
                     topnav.classList.remove('transparent-nav');
                     topbtn.classList.add('btn-info');
                     topbtn.classList.remove('btn-outline-info');
+                    signoutbtn.classList.add('btn-info');
+                    signoutbtn.classList.remove('btn-outline-info');
                 }
             }
 

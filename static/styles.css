@@ -28,6 +28,10 @@ body {
     text-align: left;
 }
 
+a#signout-btn {
+    margin-left: 8px;
+}
+
 /* Links that aren't formatted as buttons */
 a:not([role=button]), a:not([role=button]):focus, a:not([role=button]):visited {
     color: #17a2b8;

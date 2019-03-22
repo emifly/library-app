@@ -34,7 +34,7 @@
                         </div>
                         <input type="text" class="form-control" name="cardNo" placeholder="Library card number" aria-label="Library card number" aria-describedby="basic-addon1" required>
                     </div>
-                    % if error == '1':
+                    % if error == True:
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <strong>The library card number you entered is already associated with an account.</strong><br>
                             Check you definitely entered it correctly, and if you believe there is a problem, please contact us.
