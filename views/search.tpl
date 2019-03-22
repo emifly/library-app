@@ -2,7 +2,7 @@
 
         <main role="main">
 
-            <div class="index" id="fading-images">
+            <div class="jumbotron">
                 <div class="container">
                     <h1 class="display-4">Search</h1>
                 </div>

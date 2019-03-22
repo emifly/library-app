@@ -2,30 +2,39 @@
 
         <main role="main">
 
-            <div class="jumbotron index" id="fading-images">
+            <div class="jumbotron">
                 <div class="container">
-                    <h1 class="display-4">Welcome to the Softwire Library website</h1>
-                    <p><a class="btn btn-outline-info btn-info-white" href="/account" role="button">Go to my account &raquo;</a></p>
+                    <h1 class="display-4">Hello, {{ firstname }}</h1>
                 </div>
             </div>
 
             <div class="white-bg">
 
             <div class="container">
-                <h2 class="display-4" id="quick-search">Quick search all books</h2>
-                <form action="/search">
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <select class="selectpicker" data-style="btn-outline-info" name="field">
-                                <option>Title</option>
-                                <option>Author</option>
-                                <option>Publisher</option>
-                                <option>ISBN</option>
-                            </select>
+                <h2 class="display-4" id="quick-search">Your account details</h2>
+                <form>
+                    <div class="form-group row">
+                        <label for="staticFName" class="col-sm-2 col-form-label">First Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control-plaintext" id="staticFName" value="{{ firstname }}">
                         </div>
-                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
-                        <div class="input-group-append">
-                            <button class="btn btn-info" type="submit">&nbsp;Go&nbsp;</button>
+                    </div>
+                    <div class="form-group row">
+                        <label for="staticLName" class="col-sm-2 col-form-label">Last Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control-plaintext" id="staticLName" value="{{ lastname }}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{ email }}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="staticPCode" class="col-sm-2 col-form-label">Postcode</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control-plaintext" id="staticPCode" value="{{ postcode }}">
                         </div>
                     </div>
                 </form>
