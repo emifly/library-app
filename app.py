@@ -7,9 +7,7 @@ migrations_path = 'migrations'
 # Database setup
 import sqlite3
 conn = sqlite3.connect(db_file)
-
 caribou.upgrade(db_file, migrations_path)
-
 conn.close()
 
 # Backend
@@ -22,6 +20,17 @@ install(message_plugin)
 install(SQLitePlugin(dbfile=db_file))
 cookieKey = "1234567890987654321"
 
+## Classes and Functions
+class User:
+    def __init__(self, id):
+        self.id = id
+        
+
+def signin_status():
+    buttonText = "My account" if request.get_cookie("id", secret=cookieKey) else "Sign in"
+    signOutBtn = True if request.get_cookie("id", secret=cookieKey) else False
+    return buttonText, signOutBtn
+
 ## Routes
 ### Static files - DONE
 @get('/static/<file:path>')
@@ -31,49 +40,47 @@ def serve_static(file):
 ### Homepage - DONE
 @get('/')
 def display_homepage():
-    buttonText = "My account" if request.get_cookie("id", secret=cookieKey) else "Sign in"
-    signOutBtn = True if request.get_cookie("id", secret=cookieKey) else False
-    return template('index', indexpage=True, dispsignin=True, buttontext=buttonText, signout=signOutBtn)
+    bt, s = signin_status()
+    return template('index', indexpage=True, dispsignin=True, buttontext=bt, signout=s)
 
 ### Sign-in page - DONE. Actions:
 #### - Validate user details and send them via post request to their account page
 @post('/signin')
 def display_signin_post(db):
-    # Check if user is signed in. (Not quite taking my security as seriously as I should be...)
+    # Check if user is signed in. (Not exactly secure at the moment)
     userId = request.get_cookie("id", secret=cookieKey)
     if userId:
         return redirect('/account')
-    else:
-        # Check if there is the expected post data
-        if 'firstName' in request.forms:
-            fname = request.forms.get('firstName')
-            lname = request.forms.get('lastName')
-            email = request.forms.get('emailAddr')
-            pcode = request.forms.get('postcode')
-            cardNo = request.forms.get('cardNo')
-            # Check if they made an error filling in the form
-            idRow = db.execute("SELECT * FROM GenUser WHERE (firstName, lastName, emailAddr, postcode) = (?, ?, ?, ?)", (fname, lname, email, pcode)).fetchone()
-            if idRow == None:
-                # No row with the right details was found, so display error
+    # Check if there is the expected post data
+    elif 'firstName' in request.forms:
+        fname = request.forms.get('firstName')
+        lname = request.forms.get('lastName')
+        email = request.forms.get('emailAddr')
+        pcode = request.forms.get('postcode')
+        cardNo = request.forms.get('cardNo')
+        # Check if they made an error filling in the form
+        idRow = db.execute("SELECT * FROM GenUser WHERE (firstName, lastName, emailAddr, postcode) = (?, ?, ?, ?)", (fname, lname, email, pcode)).fetchone()
+        if idRow == None:
+            # No row with the right details was found, so display error
+            return template('signin', error=True)
+        else:
+            id = idRow[0]
+            publicIdRow = db.execute("SELECT * FROM PublicUser WHERE (cardNo) = (?)", (cardNo,)).fetchone()
+            # Check if there is an entry in PublicUser corresponding to the id
+            if publicIdRow == None:
                 return template('signin', error=True)
             else:
-                id = idRow[0]
-                publicIdRow = db.execute("SELECT * FROM PublicUser WHERE (cardNo) = (?)", (cardNo,)).fetchone()
-                # Check if there is an entry in PublicUser corresponding to the id
-                if publicIdRow == None:
-                    return template('signin', error=True)
+                # If there is an entry, work out if their personal details match their library card number
+                userId = publicIdRow['userId']
+                if userId == id:
+                    response.set_cookie("id", str(id), secret=cookieKey)
+                    return redirect('/account')
+                # Otherwise, there was a conflict in the details, so display error
                 else:
-                    # If there is an entry, work out if their personal details match their library card number
-                    userId = publicIdRow['userId']
-                    if userId == id:
-                        response.set_cookie("id", str(id), secret=cookieKey)
-                        return redirect('/account')
-                    # Otherwise, there was a conflict in the details, so display error
-                    else:
-                        return template('signin', error=True)                
-        # Would be strange not to have any relevant post data, but if so, serve empty form as normal
-        else:
-            return template('signin', error=True)
+                    return template('signin', error=True)                
+    # Would be strange not to have any relevant post data, but if so, serve empty form as normal
+    else:
+        return template('signin', error=True)
 @get('/signin')
 def display_signin_get(db):
     # Check if user already signed in
@@ -180,11 +187,10 @@ def display_signout():
 #### - Send get request to individual item pages depending on which result user selects
 @get('/search')
 def display_search(db):
-    buttonText = "My account" if request.get_cookie("id", secret=cookieKey) else "Sign in"
-    signOutBtn = True if request.get_cookie("id", secret=cookieKey) else False
+    bt, s = signin_status()
     # If a search hasn't been carried out yet, return empty page
     if 'searchdata' not in request.params:
-        return template('search', searchpage=True, dispsignin=True, buttontext=buttonText, signout=signOutBtn)
+        return template('search', searchpage=True, dispsignin=True, buttontext=bt, signout=s)
     # Otherwise, deal with the form data. NOTE: need to add validation here
     else:
         detail = request.query['searchdata']
@@ -208,15 +214,14 @@ def display_search(db):
                 buildQuery += " OR (authorId = ?)"
             # STILL TO DO: run query
             # STILL TO DO: Find the details of matching books in BookDetail table
-        return template('search', searchpage=True, dispsignin=True, buttontext=buttonText, signout=signOutBtn, results=results)
+        return template('search', searchpage=True, dispsignin=True, buttontext=bt, signout=s, results=results)
 
 ### Book pages. Actions:
 #### Eventually: show how many copies of the book in question are available
 #### Eventually: allow users to make reservations
 @get('/book/<id>')
 def display_book_page(db, id):
-    buttonText = "My account" if request.get_cookie("id", secret=cookieKey) else "Sign in"
-    signOutBtn = True if request.get_cookie("id", secret=cookieKey) else False
+    bt, s = signin_status()
     bookName = db.execute("SELECT bookName FROM BookDetail WHERE id = ?", (id,)).fetchone()[0]
     authorId = db.execute("SELECT authorId FROM BookDetailAuthor WHERE bookId = ?", (id,)).fetchall() # Each row represents an author
     authorNames = []
@@ -231,14 +236,13 @@ def display_book_page(db, id):
             authorsString += authorNames[i] + " and "
         else:
             authorsString += authorNames[i]
-    return template('book', book=bookName, authors=authorsString, dispsignin=True, buttontext=buttonText, signout=signOutBtn)
+    return template('book', book=bookName, authors=authorsString, dispsignin=True, buttontext=bt, signout=s)
 
 ### Contact page
 @get('/contact')
 def display_contact():
-    buttonText = "My account" if request.get_cookie("id", secret=cookieKey) else "Sign in"
-    signOutBtn = True if request.get_cookie("id", secret=cookieKey) else False
-    return template('contact', contactpage=True, dispsignin=True, buttontext=buttonText, signout=signOutBtn)
+    bt, s = signin_status()
+    return template('contact', contactpage=True, dispsignin=True, buttontext=bt, signout=s)
 
 ### Librarians: different user details page, but same actions
 #@get('/secretlibrarianroute/account')
