@@ -7,43 +7,30 @@
         <script type="text/javascript">
 
             // Set up slick carousel
-            $('.your-class').slick({
+            $('.news-slider').slick({
                 dots: true,
                 centerMode: true,
-  centerPadding: '60px',
-  slidesToShow: 3,
-  responsive: [
-    {
-      breakpoint: 992,
-      settings: {
-        centerMode: true,
-        centerPadding: '40px',
-        slidesToShow: 2
-      }
-    },
-    {
-      breakpoint: 560,
-      settings: {
-        centerMode: true,
-        centerPadding: '40px',
-        slidesToShow: 1
-      }
-    }
-  ]
+                centerPadding: '60px',
+                slidesToShow: 3,
+                responsive: [
+                    {
+                        breakpoint: 992,
+                        settings: {
+                            centerMode: true,
+                            centerPadding: '40px',
+                            slidesToShow: 2
+                        }
+                    },
+                    {
+                        breakpoint: 560,
+                        settings: {
+                            centerMode: true,
+                            centerPadding: '40px',
+                            slidesToShow: 1
+                        }
+                    }
+                ]
             });
-
-            // [Killed for now - sticking with fixed background] Alter background scrolling speed
-            /*(function(){
-                var parallax = document.querySelectorAll("body"),
-                    speed = 0.5;
-                window.onscroll = function() {
-                    [].slice.call(parallax).forEach(function(el, i) {
-                        var windowYOffset = window.pageYOffset,
-                            elBackgroundPos = "50% " + (windowYOffset * speed) + "px";
-                        el.style.backgroundPosition = elBackgroundPos;
-                    });
-                };
-            })();*/
 
             // Navbar smoothly change properties
             window.onscroll = function () {
@@ -69,6 +56,14 @@
                     signoutbtn.classList.remove('btn-outline-info');
                 }
             }
+
+            $('.edit').on('click', function() {
+                // Add form-control
+                // Remove form-control-plaintext
+                // Remove readonly
+                // Make hidden buttons visible
+                // Make edit button (self) invisible
+            });
 
         </script>
     </body>

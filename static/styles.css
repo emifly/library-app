@@ -15,6 +15,10 @@ body {
     background-attachment: fixed;
 }
 
+.hidden {
+    display: none;
+}
+
 .background-img {
     background-color: none;
 }
@@ -132,7 +136,7 @@ div.white-bg {
     padding-top: 30px;
 }
 
-#quick-search {
+#small-display {
     font-size: 2rem;
 }
 

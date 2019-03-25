@@ -12,15 +12,13 @@
             <div class="white-bg">
 
             <div class="container">
-                <h2 class="display-4" id="quick-search">Quick search all books</h2>
+                <h2 class="display-4" id="small-display">Quick search all books</h2>
                 <form action="/search">
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <select class="selectpicker" data-style="btn-outline-info" name="field">
                                 <option>Title</option>
                                 <option>Author</option>
-                                <option>Publisher</option>
-                                <option>ISBN</option>
                             </select>
                         </div>
                         <input type="text" class="form-control" aria-label="Text input with dropdown button">
@@ -32,7 +30,7 @@
                 
                 <hr class="section-divider">
 
-                <div class="your-class" style="margin-bottom: 50px">
+                <div class="news-slider" style="margin-bottom: 50px">
                     <div class="slide"><img src="http://place-puppy.com/200x200"></div>
                     <div class="slide"><img src="http://place-puppy.com/200x200"></div>
                     <div class="slide"><img src="http://place-puppy.com/200x200"></div>

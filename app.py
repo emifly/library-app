@@ -1,154 +1,14 @@
 # Configuration
-db_file = 'librarytest.db'
+import caribou
 
-# Database Seeding
+db_file = 'librarytest.db'
+migrations_path = 'migrations'
+
+# Database setup
 import sqlite3
 conn = sqlite3.connect(db_file)
 
-conn.execute('''CREATE TABLE IF NOT EXISTS GenUser (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    firstName TEXT NOT NULL,
-    middleNames TEXT,
-    lastName TEXT NOT NULL,
-    dateOfBirth INTEGER,            -- Format: ?
-    emailAddr TEXT NOT NULL,        -- Important
-    phoneNo1 TEXT,
-    phoneNo1Type TEXT,              -- Can be user defined - suggest home/mobile/work
-    phoneNo2 TEXT,
-    phoneNo2Type TEXT,              -- Can be user defined - suggest home/mobile/work
-    addrLine1 TEXT,
-    addrLine2 TEXT,
-    townCity TEXT,
-    postcode TEXT NOT NULL          -- Important
-        -- librarian and/or normal user: from PublicUser, Librarian
-);''')
-
-conn.execute('''CREATE TABLE IF NOT EXISTS PublicUser (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    cardNo TEXT NON NULL,           -- Possibility of integration with card number generation?
-    regDate INTEGER,                -- Format: ?
-        -- current loan info: from HardCopy
-        -- past use info: from join table with HardCopy and OnlineResource
-    userId INTEGER NOT NULL,
-        FOREIGN KEY (userId) REFERENCES GenUser(id)
-);''')
-
-conn.execute('''CREATE TABLE IF NOT EXISTS Librarian (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-        -- What kind of thing would be useful for a librarian's account?
-    userId INTEGER NOT NULL,
-        FOREIGN KEY (userId) REFERENCES GenUser(id)
-);''')
-
-conn.execute('''CREATE TABLE IF NOT EXISTS BookDetail (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    bookName TEXT NOT NULL,
-        -- author: from Author
-        -- publisher: in HardCopy or OnlineResource, from Publisher
-    yearPublished INTEGER,
-    isbn TEXT,
-        -- classification: from Classification
-    classmark TEXT
-);''')
-
-conn.execute('''CREATE TABLE IF NOT EXISTS OnlineResource (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    libraryId TEXT,                 -- Could be used if library has pre-existing ID system
-        -- publisher: from Publisher (different editions may have different publishers?)
-    status INTEGER DEFAULT 1,       -- Status codes: 0 = unavailable, 1 = available
-    purchaseDate INTEGER,           -- Format: ?
-    renewalFreq INTEGER,            -- Status codes? Days?
-    bookId INTEGER NOT NULL,
-        FOREIGN KEY (bookId) REFERENCES BookDetail(id)
-);''')
-
-conn.execute('''CREATE TABLE IF NOT EXISTS HardCopy (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    libraryId TEXT,                 -- Could be used if library has pre-existing ID system
-        -- publisher: from Publisher (different editions may have different publishers?)
-    status INTEGER DEFAULT 1,       -- Status codes: ***
-    purchaseDate INTEGER,           -- Format: ?
-    loanLength INTEGER NOT NULL,    -- Status codes? Days?
-    condition INTEGER DEFAULT 0,    -- Status codes: 0 = fine, 1 = worn/damaged, 2 = very poor
-    bookId INTEGER NOT NULL,
-    borrowerId INTEGER,             -- Current borrower
-        FOREIGN KEY (bookId) REFERENCES BookDetail(id),
-        FOREIGN KEY (borrowerId) REFERENCES GenUser(id)
-);''')
-
-conn.execute('''CREATE TABLE IF NOT EXISTS Author (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    firstNames TEXT,
-    lastName TEXT
-);''')
-
-conn.execute('''CREATE TABLE IF NOT EXISTS Publisher (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT,
-    city TEXT
-);''')
-
-conn.execute('''CREATE TABLE IF NOT EXISTS Classification (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    genre TEXT,
-    code TEXT
-);''')
-
-conn.execute('''CREATE TABLE IF NOT EXISTS BookDetailAuthor (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    bookId INTEGER NOT NULL,
-    authorId INTEGER NOT NULL,
-    orderPos INTEGER DEFAULT 10,    -- Will use to list authors in the right order
-        FOREIGN KEY (bookId) REFERENCES BookDetail(id),
-        FOREIGN KEY (authorId) REFERENCES Author(id)
-);''')
-
-conn.execute('''CREATE TABLE IF NOT EXISTS HardCopyPublisher (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    bookId INTEGER NOT NULL,
-    publisherId INTEGER NOT NULL,
-        FOREIGN KEY (bookId) REFERENCES HardCopy(id),
-        FOREIGN KEY (publisherId) REFERENCES Publisher(id)
-);''')
-
-conn.execute('''CREATE TABLE IF NOT EXISTS OnlineResourcePublisher (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    bookId INTEGER NOT NULL,
-    publisherId INTEGER NOT NULL,
-        FOREIGN KEY (bookId) REFERENCES OnlineResource(id),
-        FOREIGN KEY (publisherId) REFERENCES Publisher(id)
-);''')
-
-conn.execute('''CREATE TABLE IF NOT EXISTS BookDetailClassification (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    bookId INTEGER NOT NULL,
-    classId INTEGER NOT NULL,
-    orderPos INTEGER DEFAULT 10,    -- Will use to list classifications order inputted
-        FOREIGN KEY (bookId) REFERENCES BookDetail(id),
-        FOREIGN KEY (classId) REFERENCES Classification(id)
-);''')
-
-conn.execute('''CREATE TABLE IF NOT EXISTS PastLoan (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    userId INTEGER NOT NULL,
-    bookId INTEGER NOT NULL,
-    dateBorrowed INTEGER,           -- Format: ?
-    dateReturned INTEGER,           -- Format: ?
-    wasOverdue INTEGER,             -- Status codes: 0 = not overdue, 1 = overdue
-        FOREIGN KEY (userId) REFERENCES PublicUser(id),
-        FOREIGN KEY (bookId) REFERENCES HardCopy(id)
-);''')
-
-conn.execute('''CREATE TABLE IF NOT EXISTS PastAccess (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    userId INTEGER NOT NULL,
-    bookId INTEGER NOT NULL,
-    dateAccessed INTEGER,           -- Format: ?
-        FOREIGN KEY (userId) REFERENCES PublicUser(id),
-        FOREIGN KEY (bookId) REFERENCES OnlineResource(id)
-);''')
-
-conn.commit()
+caribou.upgrade(db_file, migrations_path)
 
 conn.close()
 
@@ -242,7 +102,23 @@ def display_account_details(db):
         lname = userInfo['lastName']
         email = userInfo['emailAddr']
         pcode = userInfo['postcode']
-        return template('account', firstname=fname, lastname=lname, email=email, postcode=pcode)
+        return template('account', firstname=fname, lastname=lname, email=email, postcode=pcode, signout=True)
+@post('/account') # For if user has updated their details
+def update_account_details(db):
+    # User should definitely be signed in to have reached this page via post, but check anyway
+    id = request.get_cookie("id", secret=cookieKey)
+    if not id:
+        return redirect('/signin')
+    else:
+        # Check form data
+        fname = request.forms.get('firstName')
+        lname = request.forms.get('lastName')
+        email = request.forms.get('emailAddr')
+        pcode = request.forms.get('postcode')
+        # NOTE - this line needs checking after the JavaScript is in place
+        db.execute("UPDATE GenUser SET (firstName, lastName, emailAddr, postcode) VALUES (?, ?, ?, ?) WHERE (id) = (?);", (fname, lname, email, pcode, id))
+        # Could just use the info we already have to render the page, but redirect to GET keeps it consistent if we make changes
+        return redirect('/account')
 
 ### Sign-up page - DONE. Actions: 
 #### - Send new user details via post request to confirmation page
@@ -301,13 +177,61 @@ def display_signout():
 
 ### Search page. Actions:
 #### - Send form data via get request to same location, use this to display results
-#### - Send get request to individual item pages via get request based on what happens when
+#### - Send get request to individual item pages depending on which result user selects
 @get('/search')
 def display_search(db):
-    results = []
     buttonText = "My account" if request.get_cookie("id", secret=cookieKey) else "Sign in"
     signOutBtn = True if request.get_cookie("id", secret=cookieKey) else False
-    return template('search', searchpage=True, dispsignin=True, buttontext=buttonText, signout=signOutBtn, results=results)
+    # If a search hasn't been carried out yet, return empty page
+    if 'searchdata' not in request.params:
+        return template('search', searchpage=True, dispsignin=True, buttontext=buttonText, signout=signOutBtn)
+    # Otherwise, deal with the form data. NOTE: need to add validation here
+    else:
+        detail = request.query['searchdata']
+        detailType = request.query['field']
+        if detailType == "Title":       # Title
+            results = db.execute("SELECT * FROM BookDetail WHERE bookName LIKE '%' || (?) || '%'", (detail,)).fetchall()
+        elif detailType == "Author":    # Author
+            names = detail.split()      # Split the query by spaces if necessary
+            searchValues = tuple(names)
+            # Find the ids of authors that could work
+            buildQuery = "SELECT id FROM Author WHERE name LIKE '%' || (?) || '%'"
+            for i in range(1, len(names)):  # Add extra query lines if multiple words in user input
+                buildQuery += " AND name LIKE '%' || (?) || '%'"
+            if len(names) < 2:  # Make sure to cover case where there's only one search word
+                authorIds = db.execute(buildQuery, (detail,)).fetchall()
+            else:
+                authorIds = db.execute(buildQuery, searchValues).fetchall()
+            # Find the bookIds of matching rows in the BookDetailAuthor join table
+            buildQuery = "SELECT bookId FROM BookDetailAuthor WHERE (authorId = ?)"
+            for i in range(1, len(authorIds)):
+                buildQuery += " OR (authorId = ?)"
+            # STILL TO DO: run query
+            # STILL TO DO: Find the details of matching books in BookDetail table
+        return template('search', searchpage=True, dispsignin=True, buttontext=buttonText, signout=signOutBtn, results=results)
+
+### Book pages. Actions:
+#### Eventually: show how many copies of the book in question are available
+#### Eventually: allow users to make reservations
+@get('/book/<id>')
+def display_book_page(db, id):
+    buttonText = "My account" if request.get_cookie("id", secret=cookieKey) else "Sign in"
+    signOutBtn = True if request.get_cookie("id", secret=cookieKey) else False
+    bookName = db.execute("SELECT bookName FROM BookDetail WHERE id = ?", (id,)).fetchone()[0]
+    authorId = db.execute("SELECT authorId FROM BookDetailAuthor WHERE bookId = ?", (id,)).fetchall() # Each row represents an author
+    authorNames = []
+    for i in range(0, len(authorId)):   # For each author, get their first and last name
+        currentName = db.execute("SELECT name FROM Author WHERE id = ?", (authorId[i][0],)).fetchone()[0]
+        authorNames.append(currentName)
+    authorsString = ""
+    for i in range(0, len(authorNames)):    # Could move this part into a separate function for clarity
+        if i < len(authorNames) - 2:
+            authorsString += authorNames[i] + ", "
+        elif i == len(authorNames) - 2:
+            authorsString += authorNames[i] + " and "
+        else:
+            authorsString += authorNames[i]
+    return template('book', book=bookName, authors=authorsString, dispsignin=True, buttontext=buttonText, signout=signOutBtn)
 
 ### Contact page
 @get('/contact')
@@ -317,22 +241,13 @@ def display_contact():
     return template('contact', contactpage=True, dispsignin=True, buttontext=buttonText, signout=signOutBtn)
 
 ### Librarians: different user details page, but same actions
-#@get('/secretlibrarianroute/search')
+#@get('/secretlibrarianroute/account')
 
 ### Librarians: extended search page. Same actions
-#@get('/secretlibrarianroute/account')
+#@get('/secretlibrarianroute/search')
 
 ### Librarians: page for adding books. Actions:
 #### - Send new book details via post request to same location, add details to database
 #@get('/secretlibrarianroute/inventory')
-
-'''
-
-### To do: add books. EXAMPLE: /add/book?name=A%20Fun%20Story
-@get('/add/book')
-def table_add(db):
-    return ""
-
-'''
 
 run(host='localhost', port=8080, debug=True)
