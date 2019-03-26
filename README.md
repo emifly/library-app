@@ -1,2 +1,23 @@
 # library-app
-This is my library web app made during my short internship at Softwire.
+This is our library web app made during our short internship at Softwire.
+
+## List of tables
+GenUser
+PublicUser
+Librarian
+
+BookDetail
+OnlineResource
+HardCopy
+
+Author
+Publisher
+Classification
+
+BookDetailAuthor
+HardCopyPublisher
+OnlineResoursePublisher
+BookDetailClassification
+
+PastLoan
+PastAccess
