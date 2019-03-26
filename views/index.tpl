@@ -1,4 +1,4 @@
-% include('header.tpl')
+% rebase('base.tpl', indexpage=True, dispsignin=True, buttontext=buttontext, signout=signout)
 
         <main role="main">
 
@@ -67,5 +67,3 @@
             </div>
 
         </main>
-
-% include('footer.tpl')

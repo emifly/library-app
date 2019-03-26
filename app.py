@@ -55,7 +55,7 @@ def serve_static(file):
 @get('/')
 def display_homepage():
     bt, s = signin_status()
-    return template('index', indexpage=True, dispsignin=True, buttontext=bt, signout=s)
+    return template('index', buttontext=bt, signout=s)
 
 ### Sign-in page - DONE. Actions:
 #### - Validate user details and send them via post request to their account page
@@ -202,7 +202,7 @@ def display_search(db):
     bt, s = signin_status()
     # If a search hasn't been carried out yet, return empty page
     if 'searchdata' not in request.params:
-        return template('search', searchpage=True, dispsignin=True, buttontext=bt, signout=s)
+        return template('search', buttontext=bt, signout=s)
     # Otherwise, deal with the form data. NOTE: need to add validation here
     else:
         detail = request.query['searchdata']
@@ -241,13 +241,13 @@ def display_book_page(db, id):
         currentName = db.execute("SELECT name FROM Author WHERE id = ?", (authorId[i][0],)).fetchone()[0]
         authorNames.append(currentName)
     authorsString = compile_authors_string(authorNames)
-    return template('book', book=bookName, authors=authorsString, dispsignin=True, buttontext=bt, signout=s)
+    return template('book', book=bookName, authors=authorsString, buttontext=bt, signout=s)
 
 ### Contact page
 @get('/contact')
 def display_contact():
     bt, s = signin_status()
-    return template('contact', contactpage=True, dispsignin=True, buttontext=bt, signout=s)
+    return template('contact', buttontext=bt, signout=s)
 
 ### Librarians: different user details page, but same actions
 #@get('/secretlibrarianroute/account')

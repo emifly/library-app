@@ -1,4 +1,4 @@
-% include('header.tpl')
+% rebase('base.tpl')
 
         <main role="main">
 
@@ -31,5 +31,3 @@
                 </div>
             </div>
         </footer>
-
-% include('footer.tpl')
