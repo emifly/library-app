@@ -30,14 +30,14 @@
                     <hr class="section-divider">
                     
                     <div class="list-group" style="padding-bottom: 30px;">
-                    % for i in range(1, 3):
-                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                    % for item in results:
+                        <a href="/book/{{item.id}}" class="list-group-item list-group-item-action flex-column align-items-start">
                             <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">Resource name {{ i }} (Connected to backend soon)</h5>
+                                <h5 class="mb-1">{{ item.BookDetailRow['bookName'] }}</h5>
                                 <small class="text-muted text-right">Online Resource<br><i class="fas fa-desktop"></i></small>
                             </div>
-                            <p class="mb-1">Names of authors; Potentially multiple quite long names</p>
-                            <small class="text-muted">Publisher, location, year published</small>
+                            <p class="mb-1">{{ item.authorString }}</p>
+                            <small class="text-muted">To come: publisher, location, year published</small>
                         </a>
                     % end
 

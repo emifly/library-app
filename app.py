@@ -29,6 +29,15 @@ class User:
         self.GenUserRow = db.execute("SELECT * FROM GenUser WHERE id = ?", (self.id,)).fetchone()
         self.PublicUserRow = db.execute("SELECT * FROM PublicUser WHERE userId = ?", (self.id,)).fetchone()
 
+class Book:
+    def __init__(self, id, db):
+        self.id = id
+        self.populate(db)
+    def populate(self, db):
+        self.BookDetailRow = db.execute("SELECT * FROM BookDetail WHERE id = ?", (self.id,)).fetchone()
+        self.AuthorRows = db.execute("SELECT * FROM Author INNER JOIN BookDetailAuthor ON authorId = Author.id WHERE bookId = ?", (self.id,)).fetchall()
+        self.authorString = compile_authors_string([row['name'] for row in self.AuthorRows])
+
 def signin_status():
     buttonText = "My account" if request.get_cookie("id", secret=cookieKey) else "Sign in"
     signOutBtn = True if request.get_cookie("id", secret=cookieKey) else False
@@ -44,6 +53,33 @@ def compile_authors_string(authorNames):
         else:
             authorsString += authorNames[i]
     return authorsString
+
+def ordered_results(detail, detailType, db):
+    words = detail.split()          # Split searchdata into its constituent words
+    if detailType == "Title":       # Title
+        # Priority: anything that matches detail exactly > anything that contains detail > anything that partially matches detail
+        checkerValues = [detail, detail]
+        queryString = "SELECT id, CASE WHEN (bookName = ?) THEN 10 ELSE 0 END + \
+            CASE WHEN (bookName LIKE '%' || ? || '%') THEN 5 ELSE 0 END"
+        for i in range(1, len(words)):
+            queryString += " + CASE WHEN (bookName LIKE '%' || ? || '%') THEN 1 ELSE 0 END"
+            checkerValues.append(words[i])
+        queryString += " ratingSum FROM BookDetail WHERE ratingSum > "
+        queryString += str(1 if len(words) < 4 else len(words) - 2) + " ORDER BY ratingSum DESC"
+        results = db.execute(queryString, tuple(checkerValues)).fetchall()
+    else:                           # Author
+        checkerValues = [detail, detail]
+        queryString = "SELECT BookDetail.id, CASE WHEN (Author.name = ?) THEN 10 ELSE 0 END + \
+            CASE WHEN (Author.name LIKE '%' || ? || '%') THEN 5 ELSE 0 END"
+        for i in range(1, len(words)):
+            queryString += " + CASE WHEN (Author.name LIKE '%' || ? || '%') THEN 1 ELSE 0 END"
+            checkerValues.append(words[i])
+        queryString += " ratingSum FROM BookDetail INNER JOIN BookDetailAuthor ON BookDetail.id = bookId \
+            INNER JOIN Author ON Author.id = authorId WHERE ratingSum > "
+        queryString += str(1 if len(words) < 4 else len(words) - 2)
+        queryString += " GROUP BY BookDetail.id ORDER BY ratingSum DESC"
+        results = db.execute(queryString, tuple(checkerValues)).fetchall()
+    return results
 
 ## Routes
 ### Static files - DONE
@@ -121,7 +157,7 @@ def display_account_details(db):
         lname = userInfo['lastName']
         email = userInfo['emailAddr']
         pcode = userInfo['postcode']
-        return template('account', firstname=fname, lastname=lname, email=email, postcode=pcode, signout=True)
+        return template('account', firstname=fname, lastname=lname, email=email, postcode=pcode)
 @post('/account') # For if user has updated their details
 def update_account_details(db):
     # User should definitely be signed in to have reached this page via post, but check anyway
@@ -206,27 +242,13 @@ def display_search(db):
     # Otherwise, deal with the form data. NOTE: need to add validation here
     else:
         detail = request.query['searchdata']
-        detailType = request.query['field']
-        if detailType == "Title":       # Title
-            results = db.execute("SELECT * FROM BookDetail WHERE bookName LIKE '%' || (?) || '%'", (detail,)).fetchall()
-        elif detailType == "Author":    # Author
-            names = detail.split()      # Split the query by spaces if necessary
-            searchValues = tuple(names)
-            # Find the ids of authors that could work
-            buildQuery = "SELECT id FROM Author WHERE name LIKE '%' || (?) || '%'"
-            for i in range(1, len(names)):  # Add extra query lines if multiple words in user input
-                buildQuery += " AND name LIKE '%' || (?) || '%'"
-            if len(names) < 2:  # Make sure to cover case where there's only one search word
-                authorIds = db.execute(buildQuery, (detail,)).fetchall()
-            else:
-                authorIds = db.execute(buildQuery, searchValues).fetchall()
-            # Find the bookIds of matching rows in the BookDetailAuthor join table
-            buildQuery = "SELECT bookId FROM BookDetailAuthor WHERE (authorId = ?)"
-            for i in range(1, len(authorIds)):
-                buildQuery += " OR (authorId = ?)"
-            # STILL TO DO: run query
-            # STILL TO DO: Find the details of matching books in BookDetail table
-        return template('search', searchpage=True, dispsignin=True, buttontext=bt, signout=s, results=results)
+        detailType = request.query['field']     
+        words = tuple(request.query['searchdata'].split())  # Split searchdata into its constituent words
+        if words == []:                        # Empty query: return all
+            results = db.execute("SELECT id FROM BookDetail").fetchall()
+        else:
+            results = ordered_results(detail, detailType, db)
+        return template('search', buttontext=bt, signout=s, results=[Book(row['id'], db) for row in results])
 
 ### Book pages. Actions:
 #### Eventually: show how many copies of the book in question are available

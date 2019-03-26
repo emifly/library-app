@@ -1,4 +1,4 @@
-(function() {
+$(function() {
     // Set up slick carousel
     $('.news-slider').slick({
         dots: true,
@@ -59,5 +59,5 @@
         $('#submit').removeClass('hidden');
         $('#cancel').removeClass('hidden');
     });
-    
-})();
+
+});
