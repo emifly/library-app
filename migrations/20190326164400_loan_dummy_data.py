@@ -12,4 +12,4 @@ def upgrade(conn):
 
 
 def downgrade(conn):
-    print("Sorry downgrade not implmented")
+    print("Sorry downgrade not implemented")
