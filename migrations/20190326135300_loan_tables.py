@@ -1,4 +1,5 @@
 def upgrade(conn):
+    # Change PastLoan table to Loan
     conn.execute("DROP TABLE PastLoan;")
 
     conn.execute('''CREATE TABLE IF NOT EXISTS Loan (
@@ -6,9 +7,9 @@ def upgrade(conn):
         borrowerId INTEGER NOT NULL,
         hardCopyId INTEGER NOT NULL,
 
-        borrowDate INTEGER NOT NULL,
-        dueDate INTEGER NOT NULL,
-        returnDate INTEGER,
+        dataBorrowed INTEGER NOT NULL,
+        dateDue INTEGER NOT NULL,
+        dateReturned INTEGER,
             FOREIGN KEY (borrowerId) REFERENCES PublicUser(id),
             FOREIGN KEY (hardCopyId) REFERENCES HardCopy(id)
     );''')
