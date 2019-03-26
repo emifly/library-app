@@ -22,14 +22,28 @@ cookieKey = "1234567890987654321"
 
 ## Classes and Functions
 class User:
-    def __init__(self, id):
+    def __init__(self, id, db):
         self.id = id
-        
+        self.populate(db)
+    def populate(self, db):
+        self.GenUserRow = db.execute("SELECT * FROM GenUser WHERE id = ?", (self.id,)).fetchone()
+        self.PublicUserRow = db.execute("SELECT * FROM PublicUser WHERE userId = ?", (self.id,)).fetchone()
 
 def signin_status():
     buttonText = "My account" if request.get_cookie("id", secret=cookieKey) else "Sign in"
     signOutBtn = True if request.get_cookie("id", secret=cookieKey) else False
     return buttonText, signOutBtn
+
+def compile_authors_string(authorNames):
+    authorsString = ""
+    for i in range(0, len(authorNames)):
+        if i < len(authorNames) - 2:
+            authorsString += authorNames[i] + ", "
+        elif i == len(authorNames) - 2:
+            authorsString += authorNames[i] + " and "
+        else:
+            authorsString += authorNames[i]
+    return authorsString
 
 ## Routes
 ### Static files - DONE
@@ -69,16 +83,14 @@ def display_signin_post(db):
             # Check if there is an entry in PublicUser corresponding to the id
             if publicIdRow == None:
                 return template('signin', error=True)
+            # If there is an entry, work out if their personal details match their library card number
+            elif publicIdRow['userId'] == id:
+                response.set_cookie("id", str(id), secret=cookieKey)
+                return redirect('/account')
+            # Otherwise, there was a conflict in the details, so display error
             else:
-                # If there is an entry, work out if their personal details match their library card number
-                userId = publicIdRow['userId']
-                if userId == id:
-                    response.set_cookie("id", str(id), secret=cookieKey)
-                    return redirect('/account')
-                # Otherwise, there was a conflict in the details, so display error
-                else:
-                    return template('signin', error=True)                
-    # Would be strange not to have any relevant post data, but if so, serve empty form as normal
+                return template('signin', error=True)                
+    # Would be strange not to have any relevant post data, but if so, serve empty form with error
     else:
         return template('signin', error=True)
 @get('/signin')
@@ -100,11 +112,11 @@ def display_signin_get(db):
 @get('/account')
 def display_account_details(db):
     # Check if signed in. If yes, continue. Otherwise, redirect to sign-in page
-    isSignedIn = request.get_cookie("id", secret=cookieKey)
-    if not isSignedIn:
+    idIfSignedIn = request.get_cookie("id", secret=cookieKey)
+    if not idIfSignedIn:
         return redirect('/signin')
     else:
-        userInfo = db.execute("SELECT * FROM GenUser WHERE (id) = (?)", (isSignedIn,)).fetchone()
+        userInfo = db.execute("SELECT * FROM GenUser WHERE (id) = (?)", (idIfSignedIn,)).fetchone()
         fname = userInfo['firstName']
         lname = userInfo['lastName']
         email = userInfo['emailAddr']
@@ -123,7 +135,7 @@ def update_account_details(db):
         email = request.forms.get('emailAddr')
         pcode = request.forms.get('postcode')
         # NOTE - this line needs checking after the JavaScript is in place
-        db.execute("UPDATE GenUser SET (firstName, lastName, emailAddr, postcode) VALUES (?, ?, ?, ?) WHERE (id) = (?);", (fname, lname, email, pcode, id))
+        db.execute("UPDATE GenUser SET (firstName, lastName, emailAddr, postcode) VALUES (?, ?, ?, ?) WHERE id = ?", (fname, lname, email, pcode, id))
         # Could just use the info we already have to render the page, but redirect to GET keeps it consistent if we make changes
         return redirect('/account')
 
@@ -225,17 +237,10 @@ def display_book_page(db, id):
     bookName = db.execute("SELECT bookName FROM BookDetail WHERE id = ?", (id,)).fetchone()[0]
     authorId = db.execute("SELECT authorId FROM BookDetailAuthor WHERE bookId = ?", (id,)).fetchall() # Each row represents an author
     authorNames = []
-    for i in range(0, len(authorId)):   # For each author, get their first and last name
+    for i in range(0, len(authorId)):   # Get the name of each author
         currentName = db.execute("SELECT name FROM Author WHERE id = ?", (authorId[i][0],)).fetchone()[0]
         authorNames.append(currentName)
-    authorsString = ""
-    for i in range(0, len(authorNames)):    # Could move this part into a separate function for clarity
-        if i < len(authorNames) - 2:
-            authorsString += authorNames[i] + ", "
-        elif i == len(authorNames) - 2:
-            authorsString += authorNames[i] + " and "
-        else:
-            authorsString += authorNames[i]
+    authorsString = compile_authors_string(authorNames)
     return template('book', book=bookName, authors=authorsString, dispsignin=True, buttontext=bt, signout=s)
 
 ### Contact page

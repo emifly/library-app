@@ -46,11 +46,18 @@
         }
     }
 
-    $('.edit').on('click', function() {
+    $('#edit').on('click', function() {
         // Add form-control
+        $('.form-control-plaintext').addClass('form-control');
         // Remove form-control-plaintext
+        $('.form-control').removeClass('form-control-plaintext');
         // Remove readonly
-        // Make hidden buttons visible
+        $('.form-control').attr('readonly', false);
         // Make edit button (self) invisible
+        $('#edit').addClass('hidden');
+        // Make hidden buttons visible
+        $('#submit').removeClass('hidden');
+        $('#cancel').removeClass('hidden');
     });
+    
 })();

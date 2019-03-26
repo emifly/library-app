@@ -144,6 +144,10 @@ div.white-bg {
     font-size: 2rem;
 }
 
+.form-control-plaintext {
+    padding-left: 12px;
+}
+
 /*** Styles for sign in page ***/
 
 .prepend-icon {
