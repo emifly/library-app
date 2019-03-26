@@ -19,5 +19,5 @@ HardCopyPublisher
 OnlineResoursePublisher
 BookDetailClassification
 
-PastLoan
+Loans
 PastAccess
