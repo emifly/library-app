@@ -68,7 +68,7 @@
                                                 % else:
                                                     {{ logitem['bookname'] }}
                                                     <br />
-                                                    <small>No longer available</small>
+                                                    <small class="subinfo">No longer available</small>
                                                 % end
                                             </td>
                                         </tr>
