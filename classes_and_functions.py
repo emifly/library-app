@@ -8,8 +8,23 @@ class User:
     def populate(self, db):
         self.GenUserRow = db.execute("SELECT * FROM GenUser WHERE id = ?", (self.id,)).fetchone()
         self.PublicUserRow = db.execute("SELECT * FROM PublicUser WHERE userId = ?", (self.id,)).fetchone()
-    def getFirstName(self):
-        return self.GenUserRow['firstName']
+    def getGenDetail(self, detail):
+        return self.GenUserRow[detail]
+    def getPublicDetail(self, detail):
+        return self.PublicUserRow[detail]
+    def setGenDetail(self, db, detail, value):
+        keys = self.GenUserRow.keys()
+        if detail in keys:
+            query = "UPDATE GenUser SET " + detail + " = ? WHERE id = ?"
+            db.execute(query, (value, self.id))
+        db.execute("UPDATE GenUser SET ? = ? WHERE id = ?", (detail, value, self.id))
+        # Could handle invalid inputs if necessary
+    def setGenDetails(self, db, formObj):
+        keys = self.GenUserRow.keys()
+        for key in keys:
+            if key in formObj.keys():
+                query = "UPDATE GenUser SET " + key + " = ? WHERE id = ?"
+                db.execute(query, (formObj.get(key), self.id))
 
 class Book:
     def __init__(self, id, db):
