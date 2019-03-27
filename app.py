@@ -246,10 +246,10 @@ def track_resource_access(db, resourceId):
     bt, s = signin_status()
     resourceQueryResponse = db.execute("SELECT url, bookName FROM BookDetail WHERE id = ?", (resourceId,)).fetchone()
     if not resourceQueryResponse:
-        return template('error', errormessage="Resource not found.", buttontext=bt, signout=s)
+        return template('error', errormessage="Resource not found.", backButton=True, buttontext=bt, signout=s)
     if not resourceQueryResponse[0]:
-        return template('error', errormessage=f"'{resourceQueryResponse[1]}' not available online.", buttontext=bt, signout=s)
-    
+        errorMessageTail = " is not currently available online."
+        return template('error', emphdetails=resourceQueryResponse[1], errormessage=errorMessageTail, backButton=True, buttontext=bt, signout=s)
     # Otherwise record access and redirect to resource
     db.execute("INSERT INTO PastAccess (userID, bookID, dateAccessed) VALUES (?,?,?)", (idIfSignedIn, resourceId, calendar.timegm(time.localtime())))
     redirect(resourceQueryResponse[0])

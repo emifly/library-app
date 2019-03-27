@@ -19,7 +19,7 @@
                                 <input type="text" readonly class="form-control-plaintext" id="staticFName" value="{{ authors }}">
                             </div>
                         </div>
-                        <button type="button" id="cancel" class="btn btn-outline-info padded-button" onclick="window.history.back()">Back</button>
+                        <button type="button" id="cancel" class="btn btn-outline-info back-button padded-button">Go back &raquo;</button>
                         <!-- Might keep these buttons in for librarians? -->
                         <button type="button" id="edit" class="hidden btn btn-info padded-button">Edit</button>
                         <button type="submit" id="submit" class="hidden btn btn-info padded-button">Save changes</button>
