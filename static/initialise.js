@@ -1,17 +1,28 @@
+function toggleButtonTheme(btn, outline) {
+    if (btn) {
+        if (outline == true) {
+            btn.classList.add('btn-outline-info');
+            btn.classList.remove('btn-info');
+        }
+        else {
+            btn.classList.add('btn-info');
+            btn.classList.remove('btn-outline-info');
+        }
+    }
+}
+
 $(function() {
 
     // Sort out navbar right at the start if necessary
-    if (window.pageYOffset >= 10) {
-        var topnav = document.getElementById('top-nav');
-        var topbtn = document.getElementById('nav-btn');
-        var signoutbtn = document.getElementById('signout-btn');
-        
+    var topnav = document.getElementById('top-nav');
+    var topbtn = document.getElementById('nav-btn');
+    var signoutbtn = document.getElementById('signout-btn');
+
+    if (window.pageYOffset >= 10) {        
         topnav.classList.add('blue-white-nav');
         topnav.classList.remove('transparent-nav');
-        topbtn.classList.add('btn-info');
-        topbtn.classList.remove('btn-outline-info');
-        signoutbtn.classList.add('btn-info');
-        signoutbtn.classList.remove('btn-outline-info');
+        toggleButtonTheme(topbtn, false);
+        toggleButtonTheme(signoutbtn, false);
     }
 
     // Set up back-buttons
@@ -44,38 +55,27 @@ $(function() {
 
     // Navbar smoothly change properties
     window.onscroll = function() {
-        var topnav = document.getElementById('top-nav');
-        var topbtn = document.getElementById('nav-btn');
-        var signoutbtn = document.getElementById('signout-btn');
         if (window.pageYOffset < 10) {
             if (topnav.classList.contains('blue-white-nav')) {
                 topnav.classList.add('transparent-nav');
                 topnav.classList.remove('blue-white-nav');
-                topbtn.classList.add('btn-outline-info');
-                topbtn.classList.remove('btn-info');
-                signoutbtn.classList.add('btn-outline-info');
-                signoutbtn.classList.remove('btn-info');
+                toggleButtonTheme(topbtn, true);
+                toggleButtonTheme(signoutbtn, true);
             }
         } else if (topnav.classList.contains('transparent-nav')) {
             topnav.classList.add('blue-white-nav');
             topnav.classList.remove('transparent-nav');
-            topbtn.classList.add('btn-info');
-            topbtn.classList.remove('btn-outline-info');
-            signoutbtn.classList.add('btn-info');
-            signoutbtn.classList.remove('btn-outline-info');
+            toggleButtonTheme(topbtn, false);
+            toggleButtonTheme(signoutbtn, false);
         }
     }
 
+    // 'Edit' button
     $('#edit').on('click', function() {
-        // Add form-control
         $('.form-control-plaintext').addClass('form-control');
-        // Remove form-control-plaintext
         $('.form-control').removeClass('form-control-plaintext');
-        // Remove readonly
         $('.form-control').attr('readonly', false);
-        // Make edit button (self) invisible
         $('#edit').addClass('hidden');
-        // Make hidden buttons visible
         $('#submit').removeClass('hidden');
         $('#cancel').removeClass('hidden');
     });
