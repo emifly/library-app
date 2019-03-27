@@ -163,7 +163,7 @@ def display_account_details(db):
         
         # Access Log
         accessQueryResult = db.execute("""
-                        SELECT BookDetail.bookName, BookDetail.url, PastAccess.dateAccessed
+                        SELECT BookDetail.bookName, BookDetail.id, PastAccess.dateAccessed
                         FROM PastAccess
                         INNER JOIN BookDetail
                         ON PastAccess.bookId = BookDetail.id
@@ -175,10 +175,10 @@ def display_account_details(db):
                         """, (idIfSignedIn,)).fetchall()
         accessLog = [{
             "bookname": bookName,
-            "url": url,
+            "url": f"/resource/{resourceId}",
             "date": time.strftime("%H:%M %d %B %Y", time.localtime(t))
             }
-            for bookName, url, t in accessQueryResult]
+            for bookName, resourceId, t in accessQueryResult]
 
         return template('account', firstname=fname, lastname=lname, email=email, postcode=pcode, accesslog = accessLog)
 
