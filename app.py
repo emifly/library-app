@@ -294,6 +294,13 @@ def display_contact():
     bt, s = signin_status()
     return template('contact', buttontext=bt, signout=s)
 
+@get('/resource/<resourceId:int>')
+def track_resource_access(db, resourceId):
+    idIfSignedIn = request.get_cookie("id", secret=cookieKey)
+    if not idIfSignedIn:
+        return redirect('/signin')
+    return str(id)
+
 ### Librarians: different user details page, but same actions
 #@get('/secretlibrarianroute/account')
 
