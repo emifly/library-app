@@ -242,12 +242,13 @@ def track_resource_access(db, resourceId):
     idIfSignedIn = request.get_cookie("id", secret=cookieKey)
     if not idIfSignedIn:
         return redirect('/signin')
-
     # Redirect if no online resource available
-    resourceQueryResponse = db.execute("SELECT url FROM BookDetail WHERE id = ?", (resourceId,)).fetchone()
+    bt, s = signin_status()
+    resourceQueryResponse = db.execute("SELECT url, bookName FROM BookDetail WHERE id = ?", (resourceId,)).fetchone()
     if not resourceQueryResponse:
-        # TODO Error notification that there's no  online resource available
-        redirect('/')
+        return template('error', errormessage="Resource not found.", buttontext=bt, signout=s)
+    if not resourceQueryResponse[0]:
+        return template('error', errormessage=f"'{resourceQueryResponse[1]}' not available online.", buttontext=bt, signout=s)
     db.execute("INSERT INTO PastAccess (userID, bookID, dateAccessed) VALUES (?,?,?)", (idIfSignedIn, resourceId, calendar.timegm(time.localtime())))
     redirect(resourceQueryResponse[0])
 
