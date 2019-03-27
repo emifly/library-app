@@ -249,6 +249,8 @@ def track_resource_access(db, resourceId):
         return template('error', errormessage="Resource not found.", buttontext=bt, signout=s)
     if not resourceQueryResponse[0]:
         return template('error', errormessage=f"'{resourceQueryResponse[1]}' not available online.", buttontext=bt, signout=s)
+    
+    # Otherwise record access and redirect to resource
     db.execute("INSERT INTO PastAccess (userID, bookID, dateAccessed) VALUES (?,?,?)", (idIfSignedIn, resourceId, calendar.timegm(time.localtime())))
     redirect(resourceQueryResponse[0])
 
