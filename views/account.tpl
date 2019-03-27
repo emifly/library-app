@@ -42,7 +42,7 @@
                         <a role="button" id="cancel" class="hidden btn btn-outline-info padded-button" href="/account">Cancel<a>
                     </form>
                     
-                    % if accesslog:
+                    % if defined('accesslog'):
                         <h2 class="display-4 small-display">Recent online access</h2>
                         <table class="table">
                             <thead>

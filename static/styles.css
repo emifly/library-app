@@ -49,6 +49,25 @@ a:not([role=button]):active {
     color:#117888;
 }
 
+/* Sorting out pseudoclasses for option buttons in search bar */
+button.btn.dropdown-toggle.btn-outline-info {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.dropdown-item.active, .dropdown-item.active:active {
+    background-color: #17a2b8;    
+    color: white;
+}
+    
+a:not([role=button]).dropdown-item:active {
+    background-color: #17a2b8;
+}
+    
+.dropdown-item.active:hover, .dropdown-item.active:focus, .dropdown-item:focus, a:not([role=button]).dropdown-item:active {
+    color: #f0f2f4;
+}    
+
 button.btn.dropdown-toggle.btn-outline-info {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
@@ -62,10 +81,6 @@ button.btn.dropdown-toggle.btn-outline-info {
 /* Making lines in collapsed navbar button blue */
 .navbar-light .navbar-toggler-icon {
     background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(23, 162, 184, 1)' stroke-width='1.5' stroke-linecap='round' stroke-miterlimit='0' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-}
-
-.white-hr {
-    color: white;
 }
 
 @media (max-width: 575.98px) {

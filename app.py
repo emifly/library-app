@@ -15,7 +15,7 @@ conn.close()
 from datetime import date
 import time
 import calendar
-from bottle import get, post, run, debug, install, request, response, redirect, template, static_file
+from bottle import get, post, error, run, debug, install, request, response, redirect, template, static_file
 from bottle_utils.flash import message_plugin
 from bottle_sqlite import SQLitePlugin
 install(message_plugin)
@@ -30,6 +30,8 @@ class User:
     def populate(self, db):
         self.GenUserRow = db.execute("SELECT * FROM GenUser WHERE id = ?", (self.id,)).fetchone()
         self.PublicUserRow = db.execute("SELECT * FROM PublicUser WHERE userId = ?", (self.id,)).fetchone()
+    def getFirstName(self):
+        return self.GenUserRow['firstName']
 
 class Book:
     def __init__(self, id, db):
@@ -83,11 +85,76 @@ def ordered_results(detail, detailType, db):
         results = db.execute(queryString, tuple(checkerValues)).fetchall()
     return results
 
+def verify_form_and_sign_in(formObj, db):
+    fname = formObj.get('firstName')
+    lname = formObj.get('lastName')
+    email = formObj.get('emailAddr')
+    pcode = formObj.get('postcode')
+    cardNo = formObj.get('cardNo')
+    idRow = db.execute("SELECT * FROM GenUser WHERE (firstName, lastName, emailAddr, postcode) = (?, ?, ?, ?)", (fname, lname, email, pcode)).fetchone()
+    if idRow == None:
+        # If here, no row with the right details was found, so display error
+        return True
+    else:
+        id = idRow[0]
+        publicIdRow = db.execute("SELECT * FROM PublicUser WHERE (cardNo) = (?)", (cardNo,)).fetchone()
+        # Check if there is an entry in PublicUser corresponding to the id
+        if publicIdRow == None:
+            return True
+        # If there is an entry, work out if their personal details match their library card number
+        elif publicIdRow['userId'] == id:
+            response.set_cookie("id", str(id), secret=cookieKey)
+            return False
+        # Otherwise, there was a conflict in the details, so display error
+        else:
+            return True
+
+def verify_signup(formObj, db):
+    fname = formObj.get('firstName')
+    lname = formObj.get('lastName')
+    email = formObj.get('emailAddr')
+    pcode = formObj.get('postcode')
+    cardNo = formObj.get('cardNo')
+    # Check if there is already an account associated with this library card number
+    check = db.execute("SELECT * FROM PublicUser WHERE (cardNo) = (?)", (cardNo,)).fetchone()
+    if check != None:
+        return False
+    else:
+        # Add details to database
+        db.execute("INSERT INTO GenUser (firstName, lastName, emailAddr, postcode) VALUES (?, ?, ?, ?);", (fname, lname, email, pcode))
+        # Get row id of newly added GenUser row to use as foreign key in PublicUser table
+        newRowId = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+        dateEntry = int(date.today().strftime('%Y%m%d'))
+        db.execute("INSERT INTO PublicUser (cardNo, regDate, userId) VALUES (?, ?, ?);", (cardNo, dateEntry, newRowId))
+        return newRowId
+
 ## Routes
 ### Static files - DONE
 @get('/static/<file:path>')
 def serve_static(file):
     return static_file(file, root='./static')
+
+### Errors - DONE
+@error(400)
+def error400(error):
+    bt, s = signin_status()
+    errorText = "Something seems to have gone wrong with this page request."
+    return template('error', errormessage=errorText, buttontext=bt, signout=s)
+@error(401)
+def error401(error):
+    bt, s = signin_status()
+    errorText = "You don't appear to have permission to access this page."
+    return template('error', errormessage=errorText, buttontext=bt, signout=s)
+@error(403)
+def error403(error):
+    bt, s = signin_status()
+    errorText = "You don't appear to have permission to access this page."
+    return template('error', errormessage=errorText, buttontext=bt, signout=s)
+@error(404)
+def error404(error):
+    bt, s = signin_status()
+    errorText = "There doesn't seem to be anything here."
+    return template('error', errormessage=errorText, buttontext=bt, signout=s)
 
 ### Homepage - DONE
 @get('/')
@@ -99,35 +166,17 @@ def display_homepage():
 #### - Validate user details and send them via post request to their account page
 @post('/signin')
 def display_signin_post(db):
-    # Check if user is signed in. (Not exactly secure at the moment)
+    # Check if user is signed in. Redirect to account page if so. (Not exactly secure at the moment)
     userId = request.get_cookie("id", secret=cookieKey)
     if userId:
         return redirect('/account')
     # Check if there is the expected post data
     elif 'firstName' in request.forms:
-        fname = request.forms.get('firstName')
-        lname = request.forms.get('lastName')
-        email = request.forms.get('emailAddr')
-        pcode = request.forms.get('postcode')
-        cardNo = request.forms.get('cardNo')
-        # Check if they made an error filling in the form
-        idRow = db.execute("SELECT * FROM GenUser WHERE (firstName, lastName, emailAddr, postcode) = (?, ?, ?, ?)", (fname, lname, email, pcode)).fetchone()
-        if idRow == None:
-            # No row with the right details was found, so display error
+        error = verify_form_and_sign_in(request.forms, db)
+        if error == True:
             return template('signin', error=True)
         else:
-            id = idRow[0]
-            publicIdRow = db.execute("SELECT * FROM PublicUser WHERE (cardNo) = (?)", (cardNo,)).fetchone()
-            # Check if there is an entry in PublicUser corresponding to the id
-            if publicIdRow == None:
-                return template('signin', error=True)
-            # If there is an entry, work out if their personal details match their library card number
-            elif publicIdRow['userId'] == id:
-                response.set_cookie("id", str(id), secret=cookieKey)
-                return redirect('/account')
-            # Otherwise, there was a conflict in the details, so display error
-            else:
-                return template('signin', error=True)                
+            return redirect('/account')     
     # Would be strange not to have any relevant post data, but if so, serve empty form with error
     else:
         return template('signin', error=True)
@@ -219,23 +268,13 @@ def display_signup():
 #### - Send new user back to sign in page where they can use their new details
 @post('/confirmation')
 def display_confirmation(db):
-    fname = request.forms.get('firstName')
-    lname = request.forms.get('lastName')
-    email = request.forms.get('emailAddr')
-    pcode = request.forms.get('postcode')
-    cardNo = request.forms.get('cardNo')
-    # Check if there is already an account associated with this library card number
-    check = db.execute("SELECT * FROM PublicUser WHERE (cardNo) = (?)", (cardNo,)).fetchone()
-    if check != None:
+    newUserId = verify_signup(request.forms, db)
+    # verify_signup returns false if there is already an account associated with this library card number
+    if newUserId == False:
         return redirect('/signup?error=True')
     else:
-        # Add details to database
-        db.execute("INSERT INTO GenUser (firstName, lastName, emailAddr, postcode) VALUES (?, ?, ?, ?);", (fname, lname, email, pcode))
-        # Get row id of newly added GenUser row to use as foreign key in PublicUser table
-        newRowId = db.execute("SELECT last_insert_rowid()").fetchone()[0]
-        dateEntry = int(date.today().strftime('%Y%m%d'))
-        db.execute("INSERT INTO PublicUser (cardNo, regDate, userId) VALUES (?, ?, ?);", (cardNo, dateEntry, newRowId))
-        return template('confirmation', firstName=fname)
+        newUser = User(newUserId, db)
+        return template('confirmation', user=newUser)
 # Redirect to home if anyone tries to access this page via get request
 @get('/confirmation')
 def redirect_confirmation(db):

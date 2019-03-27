@@ -12,7 +12,7 @@
             <div class="white-bg">
 
             <div class="container">
-                <h2 class="display-4" id="small-display">Quick search all books</h2>
+                <h2 class="display-4 small-display">Quick search all books</h2>
                 <form action="/search">
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
@@ -21,7 +21,7 @@
                                 <option>Author</option>
                             </select>
                         </div>
-                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                        <input type="text" name="searchdata" class="form-control" aria-label="Text input with dropdown button">
                         <div class="input-group-append">
                             <button class="btn btn-info" type="submit">&nbsp;Go&nbsp;</button>
                         </div>

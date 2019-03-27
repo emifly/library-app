@@ -1,4 +1,19 @@
 $(function() {
+
+    // Sort out navbar right at the start if necessary
+    if (window.pageYOffset >= 10) {
+        var topnav = document.getElementById('top-nav');
+        var topbtn = document.getElementById('nav-btn');
+        var signoutbtn = document.getElementById('signout-btn');
+        
+        topnav.classList.add('blue-white-nav');
+        topnav.classList.remove('transparent-nav');
+        topbtn.classList.add('btn-info');
+        topbtn.classList.remove('btn-outline-info');
+        signoutbtn.classList.add('btn-info');
+        signoutbtn.classList.remove('btn-outline-info');
+    }
+    
     // Set up slick carousel
     $('.news-slider').slick({
         dots: true,
