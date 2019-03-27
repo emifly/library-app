@@ -11,9 +11,9 @@
                         {{ errormessage }}
                     </h1>
                     % if defined('backButton'):
-                        <p><button class="btn btn-outline-info btn-info-white back-button">Go back &raquo;</button></p>
+                        <p><button class="btn btn-outline-info btn-info-white back-button">&laquo; Go back</button></p>
                     % else:
-                        <p><a class="btn btn-outline-info btn-info-white" href="/" role="button">Back to home &raquo;</a></p>
+                        <p><a class="btn btn-outline-info btn-info-white" href="/" role="button">&laquo; Back to home</a></p>
                     % end
                 </div>
             </div>
