@@ -44,8 +44,6 @@
                     <p class="form-text text-muted">Don't have an account yet?<br><a href="/signup" class="blue-link">Create one here.</a><br>(You will need your library card number.)</p>
                 </form>
 
-                <hr class="sm-hide">
-
             </div>
 
         </main>
