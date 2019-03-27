@@ -14,6 +14,7 @@ conn.close()
 ## Setup
 from datetime import date
 import time
+import calendar
 from bottle import get, post, run, debug, install, request, response, redirect, template, static_file
 from bottle_utils.flash import message_plugin
 from bottle_sqlite import SQLitePlugin
@@ -296,10 +297,18 @@ def display_contact():
 
 @get('/resource/<resourceId:int>')
 def track_resource_access(db, resourceId):
+    # Redirect if not signed in
     idIfSignedIn = request.get_cookie("id", secret=cookieKey)
     if not idIfSignedIn:
         return redirect('/signin')
-    return str(id)
+
+    # Redirect if no online resource available
+    resourceQueryResponse = db.execute("SELECT url FROM BookDetail WHERE id = ?", (resourceId,)).fetchone()
+    if not resourceQueryResponse:
+        # TODO Error notification that there's no  online resource available
+        redirect('/')
+    db.execute("INSERT INTO PastAccess (userID, bookID, dateAccessed) VALUES (?,?,?)", (idIfSignedIn, resourceId, calendar.timegm(time.localtime())))
+    redirect(resourceQueryResponse[0])
 
 ### Librarians: different user details page, but same actions
 #@get('/secretlibrarianroute/account')
