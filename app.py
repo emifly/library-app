@@ -13,6 +13,7 @@ conn.close()
 # Backend
 ## Setup
 from datetime import date
+import time
 from bottle import get, post, run, debug, install, request, response, redirect, template, static_file
 from bottle_utils.flash import message_plugin
 from bottle_sqlite import SQLitePlugin
@@ -116,12 +117,34 @@ def display_account_details(db):
     if not idIfSignedIn:
         return redirect('/signin')
     else:
+        # Account Details
         userInfo = db.execute("SELECT * FROM GenUser WHERE (id) = (?)", (idIfSignedIn,)).fetchone()
         fname = userInfo['firstName']
         lname = userInfo['lastName']
         email = userInfo['emailAddr']
         pcode = userInfo['postcode']
-        return template('account', firstname=fname, lastname=lname, email=email, postcode=pcode, signout=True)
+        
+        # Access Log
+        accessQueryResult = db.execute("""
+                        SELECT BookDetail.bookName, BookDetail.url, PastAccess.dateAccessed
+                        FROM PastAccess
+                        INNER JOIN BookDetail
+                        ON PastAccess.bookId = BookDetail.id
+                        INNER JOIN PublicUser
+                        ON PastAccess.userId = PublicUser.id
+                        WHERE PastAccess.userID = ?
+                        ORDER BY PastAccess.dateAccessed DESC
+                        LIMIT 5
+                        """, (idIfSignedIn,)).fetchall()
+        accessLog = [{
+            "bookname": bookName,
+            "url": url,
+            "date": time.strftime("%H:%M %d %B %Y", time.localtime(t))
+            }
+            for bookName, url, t in accessQueryResult]
+
+        return template('account', firstname=fname, lastname=lname, email=email, postcode=pcode, accesslog = accessLog)
+
 @post('/account') # For if user has updated their details
 def update_account_details(db):
     # User should definitely be signed in to have reached this page via post, but check anyway
