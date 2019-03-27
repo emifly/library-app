@@ -23,7 +23,7 @@
                         <!-- Might keep these buttons in for librarians? -->
                         <button type="button" id="edit" class="hidden btn btn-info padded-button">Edit</button>
                         <button type="submit" id="submit" class="hidden btn btn-info padded-button">Save changes</button>
-                        <a role="button" id="cancel" class="hidden btn btn-outline-info padded-button" href="/account">Cancel</button>
+                        <a role="button" id="cancel" class="hidden btn btn-outline-info padded-button" href="/account">Cancel</a>
                     </form>
 
                 </div> <!-- /container -->
