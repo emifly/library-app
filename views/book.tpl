@@ -12,7 +12,7 @@
 
                 <div class="container">
                     <h2 class="display-4 small-display">Details</h2>
-                    <form method="post">
+                    <form class="editable-details" method="post">
                         <div class="form-group row">
                             <label for="staticFName" class="col-sm-2 col-form-label">Author(s)</label>
                             <div class="col-sm-10">

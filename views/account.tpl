@@ -48,7 +48,7 @@
                     % if defined('accesslog'):
                                 <hr class="sm-appear">
                             </div>
-                            <div class="col-lg-1" style="min-height: 10px"></div>
+                            <div class="col-lg-1 spacer-col"></div>
                             <div class="col-lg-5">
                                 <h2 class="display-4 small-display">Recent online access</h2>
                                 <table class="table table-info-striped">
