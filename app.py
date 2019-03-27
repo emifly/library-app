@@ -221,14 +221,15 @@ def display_search(db):
 @get('/book/<id>')
 def display_book_page(db, id):
     bt, s = signin_status()
-    bookName = db.execute("SELECT bookName FROM BookDetail WHERE id = ?", (id,)).fetchone()[0]
+    bookName, url = db.execute("SELECT bookName, url FROM BookDetail WHERE id = ?", (id,)).fetchone()
+    onlineLink = f"/resource/{id}" if url else None
     authorId = db.execute("SELECT authorId FROM BookDetailAuthor WHERE bookId = ?", (id,)).fetchall() # Each row represents an author
     authorNames = []
     for i in range(0, len(authorId)):   # Get the name of each author
         currentName = db.execute("SELECT name FROM Author WHERE id = ?", (authorId[i][0],)).fetchone()[0]
         authorNames.append(currentName)
     authorsString = compile_authors_string(authorNames)
-    return template('book', book=bookName, authors=authorsString, buttontext=bt, signout=s)
+    return template('book', book=bookName, authors=authorsString, onlinelink=onlineLink, buttontext=bt, signout=s)
 
 ### Contact page
 @get('/contact')
