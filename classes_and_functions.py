@@ -101,3 +101,17 @@ def verify_signup(formObj, db):
         dateEntry = int(date.today().strftime('%Y%m%d'))
         db.execute("INSERT INTO PublicUser (cardNo, regDate, userId) VALUES (?, ?, ?);", (cardNo, dateEntry, newRowId))
         return newRowId
+
+def calculate_due_date(numDays):
+    """
+    Represented as the "proleptic Gregorian ordinal". Basically the number of days since a date way in the past.
+
+    Examples:
+        if numDays=0, then the book is due before the coming midnight.
+        if numDays=1, then the book should be returned the following day (or the day it was taken out).
+        if numdays=7, then the last day for returning will be the same day of the week as it was taken out.
+    """
+    return numDays + date.toordinal(date.today())
+
+def dbdate_to_date(dbDate):
+    return date.fromordinal(dbDate)
