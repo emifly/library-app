@@ -4,8 +4,17 @@
 
             <div class="jumbotron index">
                 <div class="container">
-                    <h1 class="display-4" id="main-header">{{ errormessage }}</h1>
-                    <p><a class="btn btn-outline-info btn-info-white" href="/" role="button">Back to home &raquo;</a></p>
+                    <h1 class="display-4" id="main-header">
+                        % if defined('emphdetails'):
+                            <span class="emphasised-detail" style="font-style: italic; font-weight: normal">{{ emphdetails }}</span>
+                        % end
+                        {{ errormessage }}
+                    </h1>
+                    % if defined('backButton'):
+                        <p><button class="btn btn-outline-info btn-info-white back-button">Go back &raquo;</button></p>
+                    % else:
+                        <p><a class="btn btn-outline-info btn-info-white" href="/" role="button">Back to home &raquo;</a></p>
+                    % end
                 </div>
             </div>
 

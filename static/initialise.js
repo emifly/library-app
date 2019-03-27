@@ -13,6 +13,11 @@ $(function() {
         signoutbtn.classList.add('btn-info');
         signoutbtn.classList.remove('btn-outline-info');
     }
+
+    // Set up back-buttons
+    $('.back-button').on('click', function() {
+        window.history.back();
+    });
     
     // Set up slick carousel
     $('.news-slider').slick({
