@@ -2,22 +2,22 @@
 This is our library web app made during our short internship at Softwire.
 
 ## List of tables
-GenUser
-PublicUser
-Librarian
+- GenUser
+- PublicUser
+- Librarian
 
-BookDetail
-OnlineResource
-HardCopy
+- BookDetail
+- OnlineResource
+- HardCopy
 
-Author
-Publisher
-Classification
+- Author
+- Publisher
+- Classification
 
-BookDetailAuthor
-HardCopyPublisher
-OnlineResoursePublisher
-BookDetailClassification
+- BookDetailAuthor
+- HardCopyPublisher
+- OnlineResoursePublisher
+- BookDetailClassification
 
-Loans
-PastAccess
+- Loans
+- PastAccess
