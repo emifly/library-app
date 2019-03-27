@@ -4,7 +4,7 @@
 
             <div class="jumbotron">
                 <div class="container">
-                    <h1 class="display-4">Hello, {{ firstname }}</h1>
+                    <h1 class="display-4">Hello, {{ user.getGenDetail('firstName') }}</h1>
                 </div>
             </div>
 
@@ -18,27 +18,81 @@
                                 <h2 class="display-4 small-display">Your account details</h2>
                                 <form class="editable-details" method="post">
                                     <div class="form-group row">
-                                        <label for="staticFName" class="col-sm-3 col-form-label">First Name</label>
+                                        <label for="static-firstName" class="col-sm-3 col-form-label">First Name</label>
                                         <div class="col-sm-9">
-                                            <input type="text" readonly class="form-control-plaintext" id="staticFName" value="{{ firstname }}">
+                                            <input type="text" name="firstName" readonly class="form-control-plaintext" id="static-firstName" value="{{ user.getGenDetail('firstName') if user.getGenDetail('firstName') != None else '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="staticLName" class="col-sm-3 col-form-label">Last Name</label>
+                                        <label for="static-middleNames" class="col-sm-3 col-form-label">Middle Names</label>
                                         <div class="col-sm-9">
-                                            <input type="text" readonly class="form-control-plaintext" id="staticLName" value="{{ lastname }}">
+                                            <input type="text" name="middleNames" readonly class="form-control-plaintext" id="static-middleNames" value="{{ user.getGenDetail('middleNames') if user.getGenDetail('middleNames') != None else '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="staticEmail" class="col-sm-3 col-form-label">Email</label>
+                                        <label for="static-lastName" class="col-sm-3 col-form-label">Last Name</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control-plaintext" id="staticEmail" value="{{ email }}">
+                                            <input type="text" name="lastName" readonly class="form-control-plaintext" id="static-lastName" value="{{ user.getGenDetail('lastName') if user.getGenDetail('lastName') != None else '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="staticPCode" class="col-sm-3 col-form-label">Postcode</label>
+                                        <label for="static-dateOfBirth" class="col-sm-3 col-form-label">Date of Birth</label>
                                         <div class="col-sm-9">
-                                            <input type="text" readonly class="form-control-plaintext" id="staticPCode" value="{{ postcode }}">
+                                            <input type="date" name="dateOfBirth" readonly class="form-control-plaintext" id="static-dateOfBirth" value="{{ user.getGenDetail('dateOfBirth') if user.getGenDetail('dateOfBirth') != None else '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="static-emailAddr" class="col-sm-3 col-form-label">Email</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="emailAddr" readonly class="form-control-plaintext" id="static-emailAddr" value="{{ user.getGenDetail('emailAddr') if user.getGenDetail('emailAddr') != None else '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="static-phoneNo1" class="col-sm-3 col-form-label">Phone Number</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="phoneNo1" readonly class="form-control-plaintext" id="static-phoneNo1" value="{{ user.getGenDetail('phoneNo1') if user.getGenDetail('phoneNo1') != None else '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="static-phoneNo1Type" class="col-sm-3 col-form-label">Phone Number Type</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="phoneNo1Type" readonly class="form-control-plaintext" id="static-phoneNo1Type" value="{{ user.getGenDetail('phoneNo1Type') if user.getGenDetail('phoneNo1Type') != None else '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="static-phoneNo2" class="col-sm-3 col-form-label">Alternative Phone Number</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="phoneNo2" readonly class="form-control-plaintext" id="static-phoneNo2" value="{{ user.getGenDetail('phoneNo2') if user.getGenDetail('phoneNo2') != None else '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="static-phoneNo2Type" class="col-sm-3 col-form-label">Alternative Phone Number Type</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="phoneNo2Type" readonly class="form-control-plaintext" id="static-phoneNo2Type" value="{{ user.getGenDetail('phoneNo2Type') if user.getGenDetail('phoneNo2Type') != None else '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="static-addrLine1" class="col-sm-3 col-form-label">Address Line 1</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="addrLine1" readonly class="form-control-plaintext" id="static-addrLine1" value="{{ user.getGenDetail('addrLine1') if user.getGenDetail('addrLine1') != None else '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="static-addrLine2" class="col-sm-3 col-form-label">Address Line 2</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="addrLine2" readonly class="form-control-plaintext" id="static-addrLine2" value="{{ user.getGenDetail('addrLine2') if user.getGenDetail('addrLine2') != None else '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="static-townCity" class="col-sm-3 col-form-label">Town/City</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="townCity" readonly class="form-control-plaintext" id="static-townCity" value="{{ user.getGenDetail('townCity') if user.getGenDetail('townCity') != None else '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="static-postcode" class="col-sm-3 col-form-label">Postcode</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="postcode" readonly class="form-control-plaintext" id="static-postcode" value="{{ user.getGenDetail('postcode') if user.getGenDetail('postcode') != None else '' }}">
                                         </div>
                                     </div>
                                     <button type="button" id="edit" class="btn btn-info padded-button">Edit my details</button>

@@ -17,8 +17,8 @@
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <select class="selectpicker" data-style="btn-outline-info" name="field">
-                                <option>Title</option>
-                                <option>Author</option>
+                                <option id="Title">Title</option>
+                                <option id="Author">Author</option>
                             </select>
                         </div>
                         <input type="text" name="searchdata" class="form-control" aria-label="Text input with dropdown button">
