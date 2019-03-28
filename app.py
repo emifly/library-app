@@ -1,4 +1,9 @@
 # Configuration
+LOAN_PERIOD=14 # days
+
+#####################
+
+
 import caribou
 
 db_file = 'librarytest.db'
@@ -237,6 +242,73 @@ def track_resource_access(db, resourceId):
     # Otherwise record access and redirect to resource
     db.execute("INSERT INTO PastAccess (userID, bookID, dateAccessed) VALUES (?,?,?)", (idIfSignedIn, resourceId, calendar.timegm(time.localtime())))
     redirect(resourceQueryResponse[0])
+
+@post('/renew')
+def issue_renew_book(db):
+    # Redirect if not signed in
+    idIfSignedIn = request.get_cookie("id", secret=cookieKey)
+    if not idIfSignedIn:
+        return redirect('/signin')
+    buttonText, signOutBtn = signin_status()
+
+    copy_id = request.forms.get('copy_id')
+
+    # Redirect if book taken out by someone else
+    already_out = db.execute("""
+        SELECT COUNT(id)
+        FROM Loan
+        WHERE hardCopyId = ?        -- this book
+        AND   borrowerId != ?       -- borrowed by someone else 
+        AND   dateReturned IS NULL  -- not returned
+        """, (copy_id, idIfSignedIn)).fetchone()[0]
+    if already_out:
+        return template('error', errormessage="Cannot renew as book on loan to another account.", backButton=True, buttontext=buttonText, signout=signOutBtn)
+
+    currentStatusQuery = db.execute("""
+        SELECT dateDue
+        FROM Loan
+        WHERE hardCopyId = ?        -- this book
+        AND   borrowerId = ?       -- borrowed by this user
+        AND   dateReturned IS NULL  -- not returned
+        """, (copy_id, idIfSignedIn)).fetchone()
+
+    if currentStatusQuery == None:
+        # Book not unreturned, so issue book
+        db.execute(f"""
+            INSERT INTO Loan (borrowerId, hardCopyId, dataBorrowed, dateDue)
+            VALUES (?, ?, ?, ?)
+            """, (idIfSignedIn, copy_id, today_date(), today_date() + LOAN_PERIOD))
+        redirect('/account')
+    else:
+        # Book already taken out, so update due date if not already overdue.
+        due_date = currentStatusQuery[0]
+        if today_date() > due_date:
+            return template('error', errormessage="Cannot renew as already overdue.", backButton=True, buttontext=buttonText, signout=signOutBtn)
+        else:
+            db.execute(f"""
+                UPDATE Loan
+                SET dateDue = ?
+                WHERE hardCopyId = ?        -- this book
+                AND   borrowerId = ?       -- borrowed by this user
+                AND   dateReturned IS NULL  -- not returned
+                """, (today_date() + LOAN_PERIOD, copy_id, idIfSignedIn))
+            redirect('/account')
+
+
+    
+
+    if today_date() > due_date:
+        return template('error', errormessage="Cannot renew as book already overdue", backButton=True, buttontext=buttonText, signout=signOutBtn)
+
+    
+        
+
+
+
+    
+
+    # Check not borrowed by anyone else
+
 
 ### Librarians: different user details page, but same actions
 #@get('/secretlibrarianroute/account')
