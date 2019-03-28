@@ -242,3 +242,9 @@ div.white-bg {
 small.subinfo {
     opacity: 0.75;
 }
+
+.renew-return {
+    width: 6em;
+    text-align: center;
+    margin: 0.2em;
+}

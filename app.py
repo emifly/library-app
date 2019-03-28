@@ -116,8 +116,23 @@ def display_account_details(db):
             "date": time.strftime("%H:%M %d %B %Y", time.localtime(t))
             }
             for bookName, resourceId, t, url in accessQueryResult]
+        # Active Loan Details
+        loanQueryResult = db.execute("""
+                        SELECT BookDetail.bookName, Loan.hardCopyId, Loan.dataBorrowed, Loan.dateDue FROM Loan
+                        INNER JOIN HardCopy ON Loan.hardCopyId = HardCopy.id
+                        INNER JOIN BookDetail ON HardCopy.bookId = BookDetail.id
+                        WHERE borrowerId = ? AND dateReturned IS NULL
+                        ORDER BY Loan.dateDue ASC
+                        """, (idIfSignedIn,)).fetchall()
+        activeLoans = [{
+            "book_title": book_name,
+            "copy_id": copy_id,
+            "date_borrowed": dbdate_to_date(date_borrowed),
+            "date_due": dbdate_to_date(date_due)
+        }
+        for book_name, copy_id, date_borrowed, date_due in loanQueryResult]
 
-        return template('account', user=thisUser, accesslog=accessLog)
+        return template('account', user=thisUser, accesslog=accessLog, active_loans=activeLoans, today=date.today())
 
 @post('/account') # For if user has updated their details
 def update_account_details(db):

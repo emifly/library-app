@@ -11,6 +11,50 @@
             <div class="white-bg">
 
                 <div class="container">
+
+                    <h2 class="display-4 small-display">Active Loans</h2>
+                    <table class="table table-info-striped" style="text-align: center">
+                        <thead>
+                        <tr>
+                            <th scope="col" style="text-align: right; width: 8%">Copy ID</th>
+                            <th scope="col" style="text-align: left">Title</th>
+                            <th scope="col" style="width: 12%">Borrowed</th>
+                            <th scope="col" style="width: 12%">Due</th>
+                            <th scope="col" style="width: 25%">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            % for loan_item in active_loans:
+                                <tr>
+                                    <td style="text-align: right">{{ loan_item['copy_id'] }}</td>
+                                    <td style="text-align: left">
+                                        {{ loan_item['book_title'] }}
+
+                                        <br />
+
+                                        % if today == loan_item['date_due']:
+                                        <span class="badge badge-warning">Due today</span>
+                                        % elif today > loan_item['date_due']:
+                                            <span class="badge badge-danger"> {{ (today - loan_item['date_due']).days}} days overdue</span>
+                                        % else:
+                                            <span class="badge badge-success"> {{ (loan_item['date_due'] - today).days}} days remaining</span>
+                                        % end
+                                    </td>
+                                    <td>{{ loan_item['date_borrowed'].strftime("%d %B %Y") }}</td>
+                                    <td> {{ loan_item['date_due'].strftime("%d %B %Y") }}</td>
+                                    <td>
+                                            % if today <= loan_item["date_due"]:
+                                                <button type="button" class="btn btn-warning renew-return">Renew</button>
+                                            % else:
+                                                <button type="button" class="btn btn-outline-danger renew-return" disabled>Overdue</button>
+                                            % end
+                                            <button type="button" class="btn btn-success renew-return">Return</button>
+                                    </td>
+                                </tr>
+                            %end
+                        </tbody>
+                    </table>
+
                     % if defined('accesslog'):
                         <div class="row" style="width: 100%">
                             <div class="col-lg-6">
