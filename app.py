@@ -73,11 +73,11 @@ def display_signin_post(db):
         return redirect('/account')
     # Check if there is the expected post data
     elif 'firstName' in request.forms:
-        idIfOk = verify_form(request.forms, db)
-        if idIfOk == False:
+        id = verify_form(request.forms, db)
+        if id == False:
             return template('signin', error=True)
         else:
-            response.set_cookie("id", str(idIfOk), secret=cookieKey)
+            response.set_cookie("id", str(id), secret=cookieKey)
             return redirect('/account')
     # Would be strange not to have any relevant post data, but if so, serve empty form with error
     else:
@@ -93,6 +93,20 @@ def display_signin_get(db):
     else:
         return template('signin', error=False)
 
+
+def get_user_details(userObj, db):
+    return ""
+
+def set_user_details(userObj, formObj, db):
+    fname = request.forms.get('firstName')
+    lname = request.forms.get('lastName')
+    email = request.forms.get('emailAddr')
+    pcode = request.forms.get('postcode')
+    # NOTE - this line needs checking after the JavaScript is in place
+    db.execute("UPDATE GenUser SET (firstName, lastName, emailAddr, postcode) VALUES (?, ?, ?, ?) WHERE id = ?", (fname, lname, email, pcode, id))
+    return ""
+
+
 ### Account page. Actions:
 #@get('/account')
 #### - Use post data to build account details page, include edit details button
@@ -106,11 +120,7 @@ def display_account_details(db):
         return redirect('/signin')
     else:
         # Account Details
-        userInfo = db.execute("SELECT * FROM GenUser WHERE (id) = (?)", (idIfSignedIn,)).fetchone()
-        fname = userInfo['firstName']
-        lname = userInfo['lastName']
-        email = userInfo['emailAddr']
-        pcode = userInfo['postcode']
+        thisUser = User(idIfSignedIn, db)
         
         # Access Log
         accessQueryResult = db.execute("""
@@ -131,7 +141,7 @@ def display_account_details(db):
             }
             for bookName, resourceId, t, url in accessQueryResult]
 
-        return template('account', firstname=fname, lastname=lname, email=email, postcode=pcode, accesslog = accessLog)
+        return template('account', user=thisUser, accesslog=accessLog)
 
 @post('/account') # For if user has updated their details
 def update_account_details(db):
@@ -140,13 +150,8 @@ def update_account_details(db):
     if not id:
         return redirect('/signin')
     else:
-        # Check form data
-        fname = request.forms.get('firstName')
-        lname = request.forms.get('lastName')
-        email = request.forms.get('emailAddr')
-        pcode = request.forms.get('postcode')
-        # NOTE - this line needs checking after the JavaScript is in place
-        db.execute("UPDATE GenUser SET (firstName, lastName, emailAddr, postcode) VALUES (?, ?, ?, ?) WHERE id = ?", (fname, lname, email, pcode, id))
+        thisUser = User(id, db)
+        thisUser.setGenDetails(db, request.forms)
         # Could just use the info we already have to render the page, but redirect to GET keeps it consistent if we make changes
         return redirect('/account')
 
@@ -213,7 +218,7 @@ def display_search(db):
             results = db.execute("SELECT id FROM BookDetail").fetchall()
         else:
             results = ordered_results(detail, detailType, db)
-        return template('search', buttontext=bt, signout=s, results=[Book(row['id'], db) for row in results])
+        return template('search', buttontext=bt, signout=s, request=request, results=[Book(row['id'], db) for row in results])
 
 ### Book pages. Actions:
 #### Eventually: show how many copies of the book in question are available
