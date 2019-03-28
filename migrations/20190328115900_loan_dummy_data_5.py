@@ -11,7 +11,7 @@ def upgrade(conn):
         """)
 
     conn.execute(f"""INSERT INTO Loan (borrowerId, hardCopyId, dataBorrowed, dateDue, dateReturned) VALUES
-        (1, 3, {date(2019, 2, 20).toordinal()}, {date(2019, 3, 6).toordinal()}, {date(2019, 3, 1).toordinal()}) -- returned
+        (1, 1, {date(2019, 2, 20).toordinal()}, {date(2019, 3, 6).toordinal()}, {date(2019, 3, 1).toordinal()}) -- returned
         """)
 
     conn.commit()
