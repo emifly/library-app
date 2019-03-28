@@ -252,3 +252,10 @@ small.subinfo {
 form.book-actions {
     display: inline-block;
 }
+
+a.table-link,
+a.table-link:not([role=button]),
+a.table-link:not([role=button]):focus,
+a.table-link:not([role=button]):visited {
+    color: #0060B6;
+} 

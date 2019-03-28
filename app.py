@@ -123,7 +123,7 @@ def display_account_details(db):
             for bookName, resourceId, t, url in accessQueryResult]
         # Active Loan Details
         loanQueryResult = db.execute("""
-                        SELECT BookDetail.bookName, Loan.hardCopyId, Loan.dataBorrowed, Loan.dateDue FROM Loan
+                        SELECT BookDetail.bookName, BookDetail.id, Loan.hardCopyId, Loan.dataBorrowed, Loan.dateDue FROM Loan
                         INNER JOIN HardCopy ON Loan.hardCopyId = HardCopy.id
                         INNER JOIN BookDetail ON HardCopy.bookId = BookDetail.id
                         WHERE borrowerId = ? AND dateReturned IS NULL
@@ -132,10 +132,11 @@ def display_account_details(db):
         activeLoans = [{
             "book_title": book_name,
             "copy_id": copy_id,
+            "book_id": book_id,
             "date_borrowed": dbdate_to_date(date_borrowed),
             "date_due": dbdate_to_date(date_due)
         }
-        for book_name, copy_id, date_borrowed, date_due in loanQueryResult]
+        for book_name, book_id, copy_id, date_borrowed, date_due in loanQueryResult]
 
         return template('account', user=thisUser, accesslog=accessLog, active_loans=activeLoans, today=date.today())
 

@@ -28,7 +28,9 @@
                                 <tr>
                                     <td style="text-align: right">{{ loan_item['copy_id'] }}</td>
                                     <td style="text-align: left">
-                                        {{ loan_item['book_title'] }}
+                                        <a href="/book/{{ loan_item['book_id'] }}" class="table-link">
+                                            {{ loan_item['book_title'] }}
+                                        </a>
 
                                         <br />
 
