@@ -33,6 +33,30 @@ def signin_status():
     buttonText = "My account" if request.get_cookie("id", secret=cookieKey) else "Sign in"
     signOutBtn = True if request.get_cookie("id", secret=cookieKey) else False
     return buttonText, signOutBtn
+class Signin_Status:
+    def __init__(self, secret):
+        self.secret = secret
+        self.is_signed_in = True if request.get_cookie("id", secret=self.secret) else False
+        self.id = request.get_cookie("id", secret=self.secret)
+        self.btn_text = "My account" if self.is_signed_in else "Sign in"
+    def update_secret(self, new_secret):
+        self.secret = new_secret
+    def check_signed_in(self):
+        self.is_signed_in = True if request.get_cookie("id", secret=self.secret) else False
+        self.id = request.get_cookie("id", secret=self.secret)
+        self.btn_text = "My account" if self.is_signed_in else "Sign in"
+    def get_id(self):
+        return self.id
+    def sign_in(self, userId):
+        response.set_cookie("id", str(userId), self.secret)
+        self.id = userId
+        self.is_signed_in = True
+        self.btn_text = "My account"
+    def sign_out(self):
+        response.delete_cookie("id")
+        self.id = None
+        self.is_signed_in = False
+        self.btn_text = "Sign in"
 
 ## Routes
 ### Static files - DONE

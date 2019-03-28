@@ -191,11 +191,11 @@ div.white-bg {
 /*** Styles for account page ***/
 
 .table-info-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(23, 162, 184, 0.06);
+    background-color: #f4f4f4;
 }
 
 .table-info-striped tr:hover, .table-info-striped tbody tr:nth-of-type(odd):hover {
-    background-color: rgba(23, 162, 184, 0.12);
+    background-color: #ececec;
 }
 
 .editable-details {
@@ -204,6 +204,11 @@ div.white-bg {
 
 .spacer-col {
     min-height: 20px;
+}
+
+span.badge {
+    font-weight: 400;
+    opacity: 0.75
 }
 
 /*** Slick sliders ***/

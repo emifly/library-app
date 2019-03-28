@@ -16,7 +16,7 @@
                     <table class="table table-info-striped" style="text-align: center">
                         <thead>
                         <tr>
-                            <th scope="col" style="text-align: right; width: 8%">Copy ID</th>
+                            <!--<th scope="col" style="text-align: right; width: 8%">Copy ID</th>-->
                             <th scope="col" style="text-align: left">Title</th>
                             <th scope="col" style="width: 12%">Borrowed</th>
                             <th scope="col" style="width: 12%">Due</th>
@@ -26,7 +26,7 @@
                         <tbody>
                             % for loan_item in active_loans:
                                 <tr>
-                                    <td style="text-align: right">{{ loan_item['copy_id'] }}</td>
+                                    <!--<td style="text-align: right">{{ loan_item['copy_id'] }}</td>-->
                                     <td style="text-align: left">
                                         <a href="/book/{{ loan_item['book_id'] }}" class="table-link">
                                             {{ loan_item['book_title'] }}
@@ -48,15 +48,15 @@
                                         <form action="/renew" method="POST"  class="book-actions">
                                             <input name="copy_id" type="hidden" value="{{ loan_item['copy_id'] }}">
                                             % if today <= loan_item["date_due"]:
-                                                <button type="submit" class="btn btn-warning renew-return">Renew</button>
+                                                <button type="submit" class="btn btn-outline-info renew-return">Renew</button>
                                             % else:
-                                                <button type="button" class="btn btn-outline-danger renew-return" disabled>Overdue</button>
+                                                <button type="button" class="btn btn-outline-secondary renew-return" disabled>Overdue</button>
                                             % end
                                         </form>
 
                                         <form action="/return" method="POST"  class="book-actions">
                                             <input name="copy_id" type="hidden" value="{{ loan_item['copy_id'] }}">
-                                            <button type="submit" class="btn btn-success renew-return">Return</button>
+                                            <button type="submit" class="btn btn-outline-success renew-return">Return</button>
                                         </form>
                                     </td>
                                 </tr>
