@@ -308,6 +308,51 @@ def issue_renew_book(db):
                 """, (today_date() + LOAN_PERIOD, copy_id, idIfSignedIn))
             return redirect('/account')
 
+
+@post('/return')
+def issue_renew_book(db):
+    # Redirect if not signed in
+    idIfSignedIn = request.get_cookie("id", secret=cookieKey)
+    if not idIfSignedIn:
+        return redirect('/signin')
+    buttonText, signOutBtn = signin_status()
+
+    copy_id = request.forms.get('copy_id')
+
+    # Redirect if book taken out by someone else
+    already_out = db.execute("""
+        SELECT COUNT(id)
+        FROM Loan
+        WHERE hardCopyId = ?        -- this book
+        AND   borrowerId != ?       -- borrowed by someone else 
+        AND   dateReturned IS NULL  -- not returned
+        """, (copy_id, idIfSignedIn)).fetchone()[0]
+    if already_out:
+        return template('error', errormessage="Cannot return as book on loan to another account.", backButton=True, buttontext=buttonText, signout=signOutBtn)
+
+    currentStatusQuery = db.execute("""
+        SELECT dateDue
+        FROM Loan
+        WHERE hardCopyId = ?        -- this book
+        AND   borrowerId = ?        -- borrowed by this user
+        AND   dateReturned IS NULL  -- not returned
+        """, (copy_id, idIfSignedIn)).fetchone()
+
+    if currentStatusQuery == None:
+        # Book not unreturned
+        return template('error', errormessage="Cannot return as book not on loan.", backButton=True, buttontext=buttonText, signout=signOutBtn)
+    else:
+        # Book taken out, so update due date if not already overdue.
+            db.execute(f"""
+                UPDATE Loan
+                SET dateReturned = ?
+                WHERE hardCopyId = ?        -- this book
+                AND   borrowerId = ?        -- borrowed by this user
+                AND   dateReturned IS NULL  -- not returned
+                """, (today_date() + LOAN_PERIOD, copy_id, idIfSignedIn))
+            redirect('/account')
+
+
 ### Librarians: different user details page, but same actions
 #@get('/secretlibrarianroute/account')
 
