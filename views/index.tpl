@@ -39,8 +39,6 @@
                     <div class="slide"><img src="http://place-puppy.com/200x200"></div>
                 </div>
 
-                <hr class="sm-hide">
-
             </div> <!-- /container -->
 
             % include('footer.tpl')

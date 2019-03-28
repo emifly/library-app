@@ -1,4 +1,5 @@
             <footer class="container sm-hide">
+                <hr>
                 <div class="row">
                     <div class="col-sm">
                         <p class="lead">Softwire Library</p>
