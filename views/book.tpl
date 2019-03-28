@@ -55,7 +55,7 @@
                                             <td>{{ copy['copyId'] }}</td>
                                             <td>
                                                 % if copy['dateReturned'] or not copy['dataBorrowed']:
-                                                    <form action="/borrow" method="POST"  class="book-actions">
+                                                    <form action="/renew" method="POST"  class="book-actions">
                                                         <input name="copy_id" type="hidden" value="{{ copy['copyId'] }}">
                                                         <button type="submit" class="btn btn-success">Available! Reserve now</button>
                                                     </form>

@@ -214,24 +214,6 @@ def display_book_page(db, book_id):
     all_copies = db.execute("SELECT HardCopy.id AS copyId, dataBorrowed, dateReturned FROM HardCopy LEFT JOIN Loan ON HardCopy.id = hardCopyId WHERE HardCopy.bookId = ? GROUP BY HardCopy.id ORDER BY copyId ASC", (this_book.id,)).fetchall()
     return template('book', book=this_book, all_copies=all_copies, dbdate_to_date=dbdate_to_date, buttontext=buttonText, signout=signOutBtn)
 
-### Confirm sign-up page - DONE. Actions: 
-#### - Send new user back to sign in page where they can use their new details
-@post('/borrow')
-def confirm_borrow(db):
-    idIfSignedIn = request.get_cookie("id", secret=cookieKey)
-    if not idIfSignedIn:
-        return redirect('/signin')
-    else:
-        copy_id = request.forms.get('copy_id')
-        # Insert a row into reservations table - VALIDATE
-        db.execute("INSERT INTO Loan (borrowerId, hardCopyId, dataBorrowed, dateDue) VALUES (?, ?, ?, ?)", (idIfSignedIn, copy_id, today_date(), calculate_due_date(15)))
-        # Get name of the reserved book
-        book_name = db.execute("SELECT bookName FROM BookDetail INNER JOIN HardCopy ON BookDetail.id = HardCopy.bookId WHERE HardCopy.id = ?", (copy_id,)).fetchone()[0]
-        return template('confirmation', book_name=book_name)
-# Redirect to home if anyone tries to access this page via get request
-@get('/borrow')
-def redirect_borrow(db):
-    return redirect('/')
 
 ### Contact page
 @get('/contact')
@@ -291,8 +273,8 @@ def issue_renew_book(db):
         db.execute(f"""
             INSERT INTO Loan (borrowerId, hardCopyId, dataBorrowed, dateDue)
             VALUES (?, ?, ?, ?)
-            """, (idIfSignedIn, copy_id, today_date(), today_date() + LOAN_PERIOD))
-        redirect('/account')
+            """, (idIfSignedIn, copy_id, today_date(), calculate_due_date(LOAN_PERIOD)))
+        return redirect('/account')
     else:
         # Book already taken out, so update due date if not already overdue.
         due_date = currentStatusQuery[0]
@@ -305,7 +287,7 @@ def issue_renew_book(db):
                 WHERE hardCopyId = ?        -- this book
                 AND   borrowerId = ?       -- borrowed by this user
                 AND   dateReturned IS NULL  -- not returned
-                """, (today_date() + LOAN_PERIOD, copy_id, idIfSignedIn))
+                """, (calculate_due_date(LOAN_PERIOD), copy_id, idIfSignedIn))
             return redirect('/account')
 
 
@@ -349,8 +331,8 @@ def issue_renew_book(db):
                 WHERE hardCopyId = ?        -- this book
                 AND   borrowerId = ?        -- borrowed by this user
                 AND   dateReturned IS NULL  -- not returned
-                """, (today_date() + LOAN_PERIOD, copy_id, idIfSignedIn))
-            redirect('/account')
+                """, (today_date(), copy_id, idIfSignedIn))
+            return redirect('/account')
 
 
 ### Librarians: different user details page, but same actions
