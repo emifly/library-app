@@ -128,7 +128,7 @@ def calculate_due_date(numDays):
     """
     return numDays + date.toordinal(date.today())
 
-def today_date(dbDate):
+def today_date():
     return date.toordinal(date.today())
 
 def dbdate_to_date(dbDate):
