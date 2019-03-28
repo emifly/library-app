@@ -20,7 +20,7 @@
                             <th scope="col" style="text-align: left">Title</th>
                             <th scope="col" style="width: 12%">Borrowed</th>
                             <th scope="col" style="width: 12%">Due</th>
-                            <th scope="col" style="width: 25%">Action</th>
+                            <th scope="col" style="width: 30%">Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -41,14 +41,21 @@
                                         % end
                                     </td>
                                     <td>{{ loan_item['date_borrowed'].strftime("%d %B %Y") }}</td>
-                                    <td> {{ loan_item['date_due'].strftime("%d %B %Y") }}</td>
+                                    <td>{{ loan_item['date_due'].strftime("%d %B %Y") }}</td>
                                     <td>
+                                        <form action="/renew" method="POST"  class="book-actions">
+                                            <input name="copy_id" type="hidden" value="{{ loan_item['copy_id'] }}">
                                             % if today <= loan_item["date_due"]:
-                                                <button type="button" class="btn btn-warning renew-return">Renew</button>
+                                                <button type="submit" class="btn btn-warning renew-return">Renew</button>
                                             % else:
                                                 <button type="button" class="btn btn-outline-danger renew-return" disabled>Overdue</button>
                                             % end
-                                            <button type="button" class="btn btn-success renew-return">Return</button>
+                                        </form>
+
+                                        <form action="/return" method="POST"  class="book-actions">
+                                            <input name="copy_id" type="hidden" value="{{ loan_item['copy_id'] }}">
+                                            <button type="submit" class="btn btn-success renew-return">Return</button>
+                                        </form>
                                     </td>
                                 </tr>
                             %end
