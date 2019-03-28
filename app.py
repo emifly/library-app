@@ -201,13 +201,7 @@ def display_search(db):
         return template('search', buttontext=buttonText, signout=signOutBtn)
     # Otherwise, deal with the form data. NOTE: need to add validation here ideally
     else:
-        detail = request.query['searchdata']
-        detailType = request.query['field']     
-        words = tuple(request.query['searchdata'].split())  # Split searchdata into its constituent words
-        if words == []:                        # Empty query: return all
-            results = db.execute("SELECT id FROM BookDetail").fetchall()
-        else:
-            results = ordered_results(detail, detailType, db)
+        results = ordered_results(request, db)
         return template('search', buttontext=buttonText, signout=signOutBtn, request=request, results=[Book(row['id'], db) for row in results])
 
 ### Book pages. Actions:
