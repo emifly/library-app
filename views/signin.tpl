@@ -3,7 +3,7 @@
         <main role="main">
 
             <div class="container text-center" style="padding-top: 120px">
-                <h2 class="display-4" id="quick-search">Please sign in to view your account.</h2>
+                <h2 class="display-4" id="quick-search">Please sign in{{ purpose_text if defined('purpose_text') else "" }}.</h2>
                 <form class="sign-in-form" action="/signin" method="post">
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">

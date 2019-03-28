@@ -90,7 +90,7 @@ def display_signin_get(db):
     if userId:
         return redirect('/account')
     else:
-        return template('signin', error=False)
+        return template('signin', error=False, purpose_text=return_purpose_text(request))
 
 ### Account page. Actions:
 #@get('/account')
@@ -101,7 +101,7 @@ def display_signin_get(db):
 def display_account_details(db):
     idIfSignedIn = request.get_cookie("id", secret=cookieKey)
     if not idIfSignedIn:
-        return redirect('/signin')
+        return redirect('/signin?origin=account')
     else:
         # Account Details
         thisUser = User(idIfSignedIn, db)
@@ -144,7 +144,7 @@ def display_account_details(db):
 def update_account_details(db):
     id = request.get_cookie("id", secret=cookieKey)
     if not id:
-        return redirect('/signin')
+        return redirect('/signin?origin=account')
     else:
         thisUser = User(id, db)
         thisUser.setGenDetails(db, request.forms)
@@ -227,7 +227,7 @@ def track_resource_access(db, resourceId):
     # Redirect if not signed in
     idIfSignedIn = request.get_cookie("id", secret=cookieKey)
     if not idIfSignedIn:
-        return redirect('/signin')
+        return redirect('/signin?origin=resource')
     # Redirect if no online resource available
     buttonText, signOutBtn = signin_status()
     resourceQueryResponse = db.execute("SELECT url, bookName FROM BookDetail WHERE id = ?", (resourceId,)).fetchone()
@@ -245,7 +245,7 @@ def issue_renew_book(db):
     # Redirect if not signed in
     idIfSignedIn = request.get_cookie("id", secret=cookieKey)
     if not idIfSignedIn:
-        return redirect('/signin')
+        return redirect('/signin?origin=account')
     buttonText, signOutBtn = signin_status()
 
     copy_id = request.forms.get('copy_id')

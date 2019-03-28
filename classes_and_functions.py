@@ -49,6 +49,16 @@ def compile_authors_string(authorNames):
             authorsString += authorNames[i]
     return authorsString
 
+def return_purpose_text(requestObj):
+    if 'origin' in requestObj.params:
+        origin = requestObj.query['origin']
+        if origin == 'account':
+            return " to view your account"
+        elif origin == 'resource':
+            return " to access this resource"
+        else:
+            return ""
+
 def ordered_results(requestObj, db):
     detail = requestObj.query['searchdata']
     detailType = requestObj.query['field']
