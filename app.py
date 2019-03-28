@@ -213,11 +213,31 @@ def display_search(db):
 ### Book pages. Actions:
 #### Eventually: show how many copies of the book in question are available
 #### Eventually: allow users to make reservations
-@get('/book/<bookId>')
-def display_book_page(db, bookId):
+@get('/book/<book_id>')
+def display_book_page(db, book_id):
     buttonText, signOutBtn = signin_status()
-    thisBook = Book(bookId, db)
-    return template('book', book=thisBook, buttontext=buttonText, signout=signOutBtn)
+    this_book = Book(book_id, db)
+    all_copies = db.execute("SELECT HardCopy.id AS copyId, dataBorrowed, dateReturned FROM HardCopy LEFT JOIN Loan ON HardCopy.id = hardCopyId WHERE HardCopy.bookId = ? GROUP BY HardCopy.id ORDER BY copyId ASC", (this_book.id,)).fetchall()
+    return template('book', book=this_book, all_copies=all_copies, dbdate_to_date=dbdate_to_date, buttontext=buttonText, signout=signOutBtn)
+
+### Confirm sign-up page - DONE. Actions: 
+#### - Send new user back to sign in page where they can use their new details
+@post('/borrow')
+def confirm_borrow(db):
+    idIfSignedIn = request.get_cookie("id", secret=cookieKey)
+    if not idIfSignedIn:
+        return redirect('/signin')
+    else:
+        copy_id = request.forms.get('copy_id')
+        # Insert a row into reservations table - VALIDATE
+        db.execute("INSERT INTO Loan (borrowerId, hardCopyId, dataBorrowed, dateDue) VALUES (?, ?, ?, ?)", (idIfSignedIn, copy_id, today_date(), calculate_due_date(15)))
+        # Get name of the reserved book
+        book_name = db.execute("SELECT bookName FROM BookDetail INNER JOIN HardCopy ON BookDetail.id = HardCopy.bookId WHERE HardCopy.id = ?", (copy_id,)).fetchone()[0]
+        return template('confirmation', book_name=book_name)
+# Redirect to home if anyone tries to access this page via get request
+@get('/borrow')
+def redirect_borrow(db):
+    return redirect('/')
 
 ### Contact page
 @get('/contact')
@@ -292,23 +312,7 @@ def issue_renew_book(db):
                 AND   borrowerId = ?       -- borrowed by this user
                 AND   dateReturned IS NULL  -- not returned
                 """, (today_date() + LOAN_PERIOD, copy_id, idIfSignedIn))
-            redirect('/account')
-
-
-    
-
-    if today_date() > due_date:
-        return template('error', errormessage="Cannot renew as book already overdue", backButton=True, buttontext=buttonText, signout=signOutBtn)
-
-    
-        
-
-
-
-    
-
-    # Check not borrowed by anyone else
-
+            return redirect('/account')
 
 ### Librarians: different user details page, but same actions
 #@get('/secretlibrarianroute/account')

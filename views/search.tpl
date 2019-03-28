@@ -43,23 +43,27 @@
                 % if defined('results'):
                     <hr class="section-divider">
                     
-                    <div class="list-group" style="padding-bottom: 30px;">
-                    % for item in results:
-                        <a href="/book/{{ item.id }}" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">{{ item.getBookDetail('bookName') }}</h5>
-                                % if item.getBookDetail('url'):
-                                    <small class="text-muted text-right">Online Resource<br><i class="fas fa-desktop"></i></small>
-                                % end
-                            </div>
-                            <p class="mb-1">{{ item.authorString }}</p>
-                            <small class="text-muted">To come: publisher, location, year published</small>
-                        </a>
+                    % if len(results) == 0:
+                        <p><span class="lead" style="font-weight: normal">There were no results. </span>Please try changing your search query.</p>
+                    % else:
+                        <div class="list-group" style="padding-bottom: 30px;">
+                        % for item in results:
+                            <a href="/book/{{ item.id }}" class="list-group-item list-group-item-action flex-column align-items-start">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ item.getBookDetail('bookName') }}</h5>
+                                    % if item.getBookDetail('url'):
+                                        <small class="text-muted text-right">Online Resource<br><i class="fas fa-desktop"></i></small>
+                                    % end
+                                </div>
+                                <p class="mb-1">{{ item.authorString }}</p>
+                                <small class="text-muted">To come: publisher, location, year published</small>
+                            </a>
+                        % end
+                        </div>
                     % end
 
                 % end
-                </div>
-
+                
             </div> <!-- /container -->
 
             </div>
