@@ -34,6 +34,7 @@ class Book:
         self.BookDetailRow = db.execute("SELECT * FROM BookDetail WHERE id = ?", (self.id,)).fetchone()
         self.AuthorRows = db.execute("SELECT * FROM Author INNER JOIN BookDetailAuthor ON authorId = Author.id WHERE bookId = ?", (self.id,)).fetchall()
         self.authorString = compile_authors_string([row['name'] for row in self.AuthorRows])
+        self.onlineLink = f"/resource/{self.id}" if self.BookDetailRow['url'] else None
     def getBookDetail(self, detail):
         return self.BookDetailRow[detail]
 

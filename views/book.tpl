@@ -4,7 +4,7 @@
 
             <div class="jumbotron">
                 <div class="container">
-                    <h1 class="display-4">{{ book }}</h1>
+                    <h1 class="display-4">{{ book.BookDetailRow['bookName'] }}</h1>
                 </div>
             </div>
 
@@ -16,12 +16,12 @@
                         <div class="form-group row">
                             <label for="staticFName" class="col-sm-2 col-form-label">Author(s)</label>
                             <div class="col-sm-10">
-                                <input type="text" readonly class="form-control-plaintext" id="staticFName" value="{{ authors }}">
+                                <input type="text" readonly class="form-control-plaintext" id="staticFName" value="{{ book.authorString }}">
                             </div>
                         </div>
                         <button type="button" id="cancel" class="btn btn-info back-button padded-button">&laquo; Go back</button>
-                        % if onlinelink:
-                            <a href="{{ onlinelink }}">
+                        % if book.onlineLink:
+                            <a href="{{ book.onlineLink }}">
                                 <button type="button" id="online-access" class="btn btn-success padded-button">View Online</button>
                             </a>
                         % else:

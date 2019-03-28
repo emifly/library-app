@@ -38,40 +38,38 @@ def serve_static(file):
 ### Errors - DONE
 @error(400)
 def error400(error):
-    bt, s = signin_status()
+    buttonText, signOutBtn = signin_status()
     errorText = "Something seems to have gone wrong with this page request."
-    return template('error', errormessage=errorText, buttontext=bt, signout=s)
+    return template('error', errormessage=errorText, buttontext=buttonText, signout=signOutBtn)
 @error(401)
 def error401(error):
-    bt, s = signin_status()
+    buttonText, signOutBtn = signin_status()
     errorText = "You don't appear to have permission to access this page."
-    return template('error', errormessage=errorText, buttontext=bt, signout=s)
+    return template('error', errormessage=errorText, buttontext=buttonText, signout=signOutBtn)
 @error(403)
 def error403(error):
-    bt, s = signin_status()
+    buttonText, signOutBtn = signin_status()
     errorText = "You don't appear to have permission to access this page."
-    return template('error', errormessage=errorText, buttontext=bt, signout=s)
+    return template('error', errormessage=errorText, buttontext=buttonText, signout=signOutBtn)
 @error(404)
 def error404(error):
-    bt, s = signin_status()
+    buttonText, signOutBtn = signin_status()
     errorText = "There doesn't seem to be anything here."
-    return template('error', errormessage=errorText, buttontext=bt, signout=s)
+    return template('error', errormessage=errorText, buttontext=buttonText, signout=signOutBtn)
 
 ### Homepage - DONE
 @get('/')
 def display_homepage():
-    bt, s = signin_status()
-    return template('index', buttontext=bt, signout=s)
+    buttonText, signOutBtn = signin_status()
+    return template('index', buttontext=buttonText, signout=signOutBtn)
 
 ### Sign-in page - DONE. Actions:
 #### - Validate user details and send them via post request to their account page
 @post('/signin')
 def display_signin_post(db):
-    # Check if user is signed in. Redirect to account page if so. (Not exactly secure at the moment)
     userId = request.get_cookie("id", secret=cookieKey)
     if userId:
         return redirect('/account')
-    # Check if there is the expected post data
     elif 'firstName' in request.forms:
         id = verify_form(request.forms, db)
         if id == False:
@@ -79,33 +77,15 @@ def display_signin_post(db):
         else:
             response.set_cookie("id", str(id), secret=cookieKey)
             return redirect('/account')
-    # Would be strange not to have any relevant post data, but if so, serve empty form with error
     else:
         return template('signin', error=True)
 @get('/signin')
 def display_signin_get(db):
-    # Check if user already signed in
     userId = request.get_cookie("id", secret=cookieKey)
-    # If yes, redirect to account page
     if userId:
         return redirect('/account')
-    # If no, serve empty form as normal
     else:
         return template('signin', error=False)
-
-
-def get_user_details(userObj, db):
-    return ""
-
-def set_user_details(userObj, formObj, db):
-    fname = request.forms.get('firstName')
-    lname = request.forms.get('lastName')
-    email = request.forms.get('emailAddr')
-    pcode = request.forms.get('postcode')
-    # NOTE - this line needs checking after the JavaScript is in place
-    db.execute("UPDATE GenUser SET (firstName, lastName, emailAddr, postcode) VALUES (?, ?, ?, ?) WHERE id = ?", (fname, lname, email, pcode, id))
-    return ""
-
 
 ### Account page. Actions:
 #@get('/account')
@@ -114,23 +94,19 @@ def set_user_details(userObj, formObj, db):
 #### - Let user edit details, send users to same page via post request with new data
 @get('/account')
 def display_account_details(db):
-    # Check if signed in. If yes, continue. Otherwise, redirect to sign-in page
     idIfSignedIn = request.get_cookie("id", secret=cookieKey)
     if not idIfSignedIn:
         return redirect('/signin')
     else:
         # Account Details
         thisUser = User(idIfSignedIn, db)
-        
         # Access Log
         accessQueryResult = db.execute("""
                         SELECT BookDetail.bookName, BookDetail.id, PastAccess.dateAccessed, BookDetail.url
                         FROM PastAccess
                         INNER JOIN BookDetail
                         ON PastAccess.bookId = BookDetail.id
-                        INNER JOIN PublicUser
-                        ON PastAccess.userId = PublicUser.id
-                        WHERE PastAccess.userID = ?
+                        WHERE PastAccess.userId = ?
                         ORDER BY PastAccess.dateAccessed DESC
                         LIMIT 5
                         """, (idIfSignedIn,)).fetchall()
@@ -145,7 +121,6 @@ def display_account_details(db):
 
 @post('/account') # For if user has updated their details
 def update_account_details(db):
-    # User should definitely be signed in to have reached this page via post, but check anyway
     id = request.get_cookie("id", secret=cookieKey)
     if not id:
         return redirect('/signin')
@@ -159,12 +134,9 @@ def update_account_details(db):
 #### - Send new user details via post request to confirmation page
 @get('/signup')
 def display_signup():
-    # Check if user already signed up
     userId = request.get_cookie("id", secret=cookieKey)
-    # If yes, redirect to account page
     if userId:
         return redirect('/account')
-    # Otherwise, display sign up page as normal
     else:
         errorVal = False
         if 'error' in request.query:
@@ -192,11 +164,9 @@ def redirect_confirmation(db):
 @get('/signout')
 def display_signout():
     isSignedIn = request.get_cookie("id", secret=cookieKey)
-    # If signed in, sign out and display confirmation that this has happened
     if isSignedIn:
         response.delete_cookie("id")
         return template('signout')
-    # Otherwise, redirect to home
     else:
         return redirect('/')
 
@@ -205,11 +175,11 @@ def display_signout():
 #### - Send get request to individual item pages depending on which result user selects
 @get('/search')
 def display_search(db):
-    bt, s = signin_status()
+    buttonText, signOutBtn = signin_status()
     # If a search hasn't been carried out yet, return empty page
     if 'searchdata' not in request.params:
-        return template('search', buttontext=bt, signout=s)
-    # Otherwise, deal with the form data. NOTE: need to add validation here
+        return template('search', buttontext=buttonText, signout=signOutBtn)
+    # Otherwise, deal with the form data. NOTE: need to add validation here ideally
     else:
         detail = request.query['searchdata']
         detailType = request.query['field']     
@@ -218,23 +188,16 @@ def display_search(db):
             results = db.execute("SELECT id FROM BookDetail").fetchall()
         else:
             results = ordered_results(detail, detailType, db)
-        return template('search', buttontext=bt, signout=s, request=request, results=[Book(row['id'], db) for row in results])
+        return template('search', buttontext=buttonText, signout=signOutBtn, request=request, results=[Book(row['id'], db) for row in results])
 
 ### Book pages. Actions:
 #### Eventually: show how many copies of the book in question are available
 #### Eventually: allow users to make reservations
-@get('/book/<id>')
-def display_book_page(db, id):
-    bt, s = signin_status()
-    bookName, url = db.execute("SELECT bookName, url FROM BookDetail WHERE id = ?", (id,)).fetchone()
-    onlineLink = f"/resource/{id}" if url else None
-    authorId = db.execute("SELECT authorId FROM BookDetailAuthor WHERE bookId = ?", (id,)).fetchall() # Each row represents an author
-    authorNames = []
-    for i in range(0, len(authorId)):   # Get the name of each author
-        currentName = db.execute("SELECT name FROM Author WHERE id = ?", (authorId[i][0],)).fetchone()[0]
-        authorNames.append(currentName)
-    authorsString = compile_authors_string(authorNames)
-    return template('book', book=bookName, authors=authorsString, onlinelink=onlineLink, buttontext=bt, signout=s)
+@get('/book/<bookId>')
+def display_book_page(db, bookId):
+    buttonText, signOutBtn = signin_status()
+    thisBook = Book(bookId, db)
+    return template('book', book=thisBook, buttontext=buttonText, signout=signOutBtn)
 
 ### Contact page
 @get('/contact')
@@ -249,13 +212,13 @@ def track_resource_access(db, resourceId):
     if not idIfSignedIn:
         return redirect('/signin')
     # Redirect if no online resource available
-    bt, s = signin_status()
+    buttonText, signOutBtn = signin_status()
     resourceQueryResponse = db.execute("SELECT url, bookName FROM BookDetail WHERE id = ?", (resourceId,)).fetchone()
     if not resourceQueryResponse:
-        return template('error', errormessage="Resource not found.", backButton=True, buttontext=bt, signout=s)
+        return template('error', errormessage="Resource not found.", backButton=True, buttontext=buttonText, signout=signOutBtn)
     if not resourceQueryResponse[0]:
         errorMessageTail = " is not currently available online."
-        return template('error', emphdetails=resourceQueryResponse[1], errormessage=errorMessageTail, backButton=True, buttontext=bt, signout=s)
+        return template('error', emphdetails=resourceQueryResponse[1], errormessage=errorMessageTail, backButton=True, buttontext=buttonText, signout=signOutBtn)
     # Otherwise record access and redirect to resource
     db.execute("INSERT INTO PastAccess (userID, bookID, dateAccessed) VALUES (?,?,?)", (idIfSignedIn, resourceId, calendar.timegm(time.localtime())))
     redirect(resourceQueryResponse[0])
