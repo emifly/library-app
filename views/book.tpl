@@ -57,7 +57,7 @@
                                                 % if copy['dateReturned'] or not copy['dateBorrowed']:
                                                     <form action="/renew" method="POST"  class="book-actions">
                                                         <input name="copy_id" type="hidden" value="{{ copy['copyId'] }}">
-                                                        <button type="submit" class="btn btn-success">Issue book!</button>
+                                                        <button type="submit" class="btn btn-success">Issue book</button>
                                                     </form>
                                                 % else:
                                                     <button type="button" class="btn btn-secondary disabled" disabled>{{ "Due back " + dbdate_to_date(copy['dateDue']).strftime("%d %B %Y")  }}</button>
