@@ -54,11 +54,18 @@
                                         <tr>
                                             <td>{{ copy['copyId'] }}</td>
                                             <td>
+                                            % print(signin_status.id)
+                                            % print(copy['borrowerId'])
                                                 % if copy['dateReturned'] or not copy['dateBorrowed']:
                                                     <form action="/renew" method="POST"  class="book-actions">
                                                         <input name="copy_id" type="hidden" value="{{ copy['copyId'] }}">
                                                         <button type="submit" class="btn btn-success">Issue book</button>
                                                     </form>
+                                                % elif copy['borrowerId'] == int(signin_status.id):
+                                                    % print("ingo")
+                                                    <a href="/account">
+                                                        <button type="button" class="btn btn-warning">{{ "Yours, due " + dbdate_to_date(copy['dateDue']).strftime("%d %B %Y")  }}</button>
+                                                    </a>
                                                 % else:
                                                     <button type="button" class="btn btn-secondary disabled" disabled>{{ "Due back " + dbdate_to_date(copy['dateDue']).strftime("%d %B %Y")  }}</button>
                                                 % end
