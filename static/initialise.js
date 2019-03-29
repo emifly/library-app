@@ -80,4 +80,37 @@ $(function() {
         $('#cancel').removeClass('hidden');
     });
 
+    // Buttons to add more authors in resource add page - could be refactored
+    $('#author1-btn').on('click', function() {
+        if ($('#author2-group').hasClass('hidden')) {
+            $('#author2-group').removeClass('hidden');
+            $('#author1').attr('placeholder', "First author");
+        }
+        else
+            $('#author3-group').removeClass('hidden');
+    });
+    $('#author2-btn').on('click', function() {
+        $('#author3-group').removeClass('hidden');
+    });
+
 });
+
+// Taken from getbootstrap.com/docs/4.0/components/forms/#validation:
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
