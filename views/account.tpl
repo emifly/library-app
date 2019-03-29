@@ -18,8 +18,8 @@
                         <tr>
                             <!--<th scope="col" style="text-align: right; width: 8%">Copy ID</th>-->
                             <th scope="col" style="text-align: left">Title</th>
-                            <th scope="col" style="width: 12%">Borrowed</th>
-                            <th scope="col" style="width: 12%">Due</th>
+                            <th scope="col" style="width: 15%; text-align: right">Borrowed</th>
+                            <th scope="col" style="width: 15%; text-align: right">Due</th>
                             <th scope="col" style="width: 30%">Action</th>
                         </tr>
                         </thead>
@@ -42,8 +42,8 @@
                                             <span class="badge badge-success"> {{ (loan_item['date_due'] - today).days}} days remaining</span>
                                         % end
                                     </td>
-                                    <td>{{ loan_item['date_borrowed'].strftime("%d %B %Y") }}</td>
-                                    <td>{{ loan_item['date_due'].strftime("%d %B %Y") }}</td>
+                                    <td style="text-align: right">{{ loan_item['date_borrowed'].strftime("%d %B %Y") }}</td>
+                                    <td style="text-align: right">{{ loan_item['date_due'].strftime("%d %B %Y") }}</td>
                                     <td>
                                         <form action="/renew" method="POST"  class="book-actions">
                                             <input name="copy_id" type="hidden" value="{{ loan_item['copy_id'] }}">
