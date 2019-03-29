@@ -54,7 +54,7 @@
                                             % elif loan_item["renewal_length"] == 0:
                                                 <button type="submit" class="btn btn-outline-secondary renew-return" disabled>Wait</button>
                                             % elif today <= loan_item["date_due"]:
-                                                <button type="submit" class="btn btn-outline-info renew-return">&#43;{{ loan_item["renewal_length"] }} days</button>
+                                                <button type="submit" class="btn btn-outline-info renew-return">&#43;{{ loan_item["renewal_length"] }} day{{'' if loan_item["renewal_length"] == 1 else 's'}}</button>
                                             % else:
                                                 <button type="button" class="btn btn-outline-secondary renew-return" disabled>Overdue</button>
                                             % end
@@ -153,7 +153,7 @@
                                         <div class="col-sm-9">
                                             <input type="text" name="postcode" readonly class="form-control-plaintext" id="static-postcode" value="{{ user.get_GenUser_detail('postcode') if user.get_GenUser_detail('postcode') != None else '' }}">
                                         </div>
-                                    </div>
+                                    </div>=
                                     <button type="button" id="edit" class="btn btn-info padded-button">Edit my details</button>
                                     <button type="submit" id="submit" class="hidden btn btn-info padded-button">Save changes</button>
                                     <a role="button" id="cancel" class="hidden btn btn-outline-info padded-button" href="/account">Cancel</a>

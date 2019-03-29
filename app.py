@@ -200,7 +200,7 @@ def display_search(db):
 @get('/book/<book_id>')
 def display_book_page(db, book_id):
     this_book = Book(book_id, db)
-    all_copies = db.execute("SELECT HardCopy.id AS copyId, dateBorrowed, dateReturned FROM HardCopy LEFT JOIN Loan ON HardCopy.id = hardCopyId WHERE HardCopy.bookId = ? GROUP BY HardCopy.id ORDER BY copyId ASC", (this_book.id,)).fetchall()
+    all_copies = db.execute("SELECT HardCopy.id AS copyId, dateBorrowed, dateReturned, dateDue FROM HardCopy LEFT JOIN Loan ON HardCopy.id = hardCopyId WHERE HardCopy.bookId = ? GROUP BY HardCopy.id ORDER BY copyId ASC", (this_book.id,)).fetchall()
     return template('book', book=this_book, all_copies=all_copies, dbdate_to_date=dbdate_to_date, signin_status=Signin_Status(cookie_key))
 
 @get('/contact')
