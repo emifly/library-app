@@ -7,7 +7,7 @@ def upgrade(conn):
         borrowerId INTEGER NOT NULL,
         hardCopyId INTEGER NOT NULL,
 
-        dataBorrowed INTEGER NOT NULL,
+        dateBorrowed INTEGER NOT NULL,
         dateDue INTEGER NOT NULL,
         dateReturned INTEGER,
             FOREIGN KEY (borrowerId) REFERENCES PublicUser(id),

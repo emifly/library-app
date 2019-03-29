@@ -127,6 +127,7 @@ def verify_signup(form_obj, db):
         db.execute("INSERT INTO PublicUser (cardNo, regDate, userId) VALUES (?, ?, ?);", (cardno, date_entry, new_row_id))
         return new_row_id
 
+# Simple functions that could be inlined but useful if database date format changes later
 def calculate_due_date(num_days):
     """
     Represented as the "proleptic Gregorian ordinal". Basically the number of days since a date way in the past.

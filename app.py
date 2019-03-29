@@ -1,5 +1,6 @@
 # Configuration
 LOAN_PERIOD=14 # days
+MAX_RENEWAL=100 # days since issue
 
 #####################
 
@@ -122,7 +123,7 @@ def display_account_details(db):
             for book_name, resource_id, t, url in access_query_response]
         # Active Loan Details
         loan_query_response = db.execute("""
-                        SELECT BookDetail.bookName, BookDetail.id, Loan.hardCopyId, Loan.dataBorrowed, Loan.dateDue FROM Loan
+                        SELECT BookDetail.bookName, BookDetail.id, Loan.hardCopyId, Loan.dateBorrowed, Loan.dateDue FROM Loan
                         INNER JOIN HardCopy ON Loan.hardCopyId = HardCopy.id
                         INNER JOIN BookDetail ON HardCopy.bookId = BookDetail.id
                         WHERE borrowerId = ? AND dateReturned IS NULL
@@ -196,7 +197,7 @@ def display_search(db):
 @get('/book/<book_id>')
 def display_book_page(db, book_id):
     this_book = Book(book_id, db)
-    all_copies = db.execute("SELECT HardCopy.id AS copyId, dataBorrowed, dateReturned FROM HardCopy LEFT JOIN Loan ON HardCopy.id = hardCopyId WHERE HardCopy.bookId = ? GROUP BY HardCopy.id ORDER BY copyId ASC", (this_book.id,)).fetchall()
+    all_copies = db.execute("SELECT HardCopy.id AS copyId, dateBorrowed, dateReturned FROM HardCopy LEFT JOIN Loan ON HardCopy.id = hardCopyId WHERE HardCopy.bookId = ? GROUP BY HardCopy.id ORDER BY copyId ASC", (this_book.id,)).fetchall()
     return template('book', book=this_book, all_copies=all_copies, dbdate_to_date=dbdate_to_date, signin_status=Signin_Status(cookie_key))
 
 @get('/contact')
@@ -239,31 +240,46 @@ def issue_renew_book(db):
         return template('error', error_message="Cannot renew as book on loan to another account.", back_button=True, signin_status=signin_status)
 
     current_status_query = db.execute("""
-        SELECT dateDue
+        SELECT dateDue, dateBorrowed
         FROM Loan
         WHERE hardCopyId = ?        -- this book
-        AND   borrowerId = ?       -- borrowed by this user
+        AND   borrowerId = ?        -- borrowed by this user
         AND   dateReturned IS NULL  -- not returned
         """, (copy_id, signin_status.id)).fetchone()
 
     if current_status_query == None:
         # Book not unreturned, so issue book
         db.execute(f"""
-            INSERT INTO Loan (borrowerId, hardCopyId, dataBorrowed, dateDue)
+            INSERT INTO Loan (borrowerId, hardCopyId, dateBorrowed, dateDue)
             VALUES (?, ?, ?, ?)
             """, (signin_status.id, copy_id, today_date(), calculate_due_date(LOAN_PERIOD)))
         return redirect('/account')
     else:
         # Book already taken out, so update due date if not already overdue.
         due_date = current_status_query[0]
+        issue_date = current_status_query[1]
+        max_renew_date = issue_date + MAX_RENEWAL
         if today_date() > due_date:
             return template('error', error_message="Cannot renew as already overdue.", signin_status=signin_status)
+        elif calculate_due_date(LOAN_PERIOD) > max_renew_date:
+            if max_renew_date == due_date:
+                return template('error', error_message="Already renewed to maximum loan duration.", signin_status=signin_status)
+            else:
+                db.execute(f"""
+                    UPDATE Loan
+                    SET dateDue = ?
+                    WHERE hardCopyId = ?        -- this book
+                    AND   borrowerId = ?        -- borrowed by this user
+                    AND   dateReturned IS NULL  -- not returned
+                    """, (max_renew_date, copy_id, signin_status.id))
+                return redirect('/account')
+
         else:
             db.execute(f"""
                 UPDATE Loan
                 SET dateDue = ?
                 WHERE hardCopyId = ?        -- this book
-                AND   borrowerId = ?       -- borrowed by this user
+                AND   borrowerId = ?        -- borrowed by this user
                 AND   dateReturned IS NULL  -- not returned
                 """, (calculate_due_date(LOAN_PERIOD), copy_id, signin_status.id))
             return redirect('/account')
