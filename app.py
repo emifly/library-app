@@ -134,7 +134,8 @@ def display_account_details(db):
             "copy_id": copy_id,
             "book_id": book_id,
             "date_borrowed": dbdate_to_date(date_borrowed),
-            "date_due": dbdate_to_date(date_due)
+            "date_due": dbdate_to_date(date_due),
+            "max_renewal": dbdate_to_date(date_borrowed + MAX_RENEWAL)
         }
         for book_name, book_id, copy_id, date_borrowed, date_due in loan_query_response]
 

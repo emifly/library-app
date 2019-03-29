@@ -45,9 +45,12 @@
                                     <td style="text-align: right">{{ loan_item['date_borrowed'].strftime("%d %B %Y") }}</td>
                                     <td style="text-align: right">{{ loan_item['date_due'].strftime("%d %B %Y") }}</td>
                                     <td>
+                                        % print(loan_item["date_due"], loan_item["max_renewal"])
                                         <form action="/renew" method="POST"  class="book-actions">
                                             <input name="copy_id" type="hidden" value="{{ loan_item['copy_id'] }}">
-                                            % if today <= loan_item["date_due"]:
+                                            % if loan_item["date_due"] == loan_item["max_renewal"]:
+                                                <button type="submit" class="btn btn-outline-secondary renew-return" disabled>Maxed</button>
+                                            % elif today <= loan_item["date_due"]:
                                                 <button type="submit" class="btn btn-outline-info renew-return">Renew</button>
                                             % else:
                                                 <button type="button" class="btn btn-outline-secondary renew-return" disabled>Overdue</button>
