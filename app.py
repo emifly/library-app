@@ -251,8 +251,8 @@ def issue_renew_book(db):
         """, (copy_id, signin_status.id)).fetchone()
 
     if current_status_query == None:
-        # Book not unreturned, so issue book if don't reaach book limits
-        num_loaned_to_user = already_out = db.execute("""
+        # Book not unreturned, so issue book if don't reaach book limits and not already checked out a copy
+        num_loaned_to_user = db.execute("""
             SELECT COUNT(id)
             FROM Loan
             WHERE borrowerId = ?        -- borrowed by this user 
@@ -261,11 +261,21 @@ def issue_renew_book(db):
         if num_loaned_to_user == MAX_ON_LOAN:
             return template('error', error_message="You already have the maximum number of books on loan.", signin_status=signin_status)
         else:
-            db.execute(f"""
-                INSERT INTO Loan (borrowerId, hardCopyId, dateBorrowed, dateDue)
-                VALUES (?, ?, ?, ?)
-                """, (signin_status.id, copy_id, today_date(), calculate_due_date(LOAN_PERIOD)))
-            return redirect('/account')
+            copies_of_book_with_user = db.execute("""
+                SELECT COUNT(*) FROM Loan
+                INNER JOIN HardCopy ON Loan.hardCopyId = HardCopy.id
+                WHERE HardCopy.bookId = (SELECT bookId FROM HardCopy WHERE id = ?)  -- Same book (in the abstract, not hard copy)
+                    AND   borrowerId  = ?                                           -- borrowed by this user
+                    AND   dateReturned IS NULL                                      -- not returned
+                """, (copy_id, signin_status.id)).fetchone()[0]
+            if copies_of_book_with_user != 0:
+                return template('error', error_message="You already a copy of this book.", signin_status=signin_status)
+            else:
+                db.execute(f"""
+                    INSERT INTO Loan (borrowerId, hardCopyId, dateBorrowed, dateDue)
+                    VALUES (?, ?, ?, ?)
+                    """, (signin_status.id, copy_id, today_date(), calculate_due_date(LOAN_PERIOD)))
+                return redirect('/account')
     else:
         # Book already taken out, so update due date if not already overdue.
         due_date = current_status_query[0]
