@@ -86,7 +86,7 @@
                         </div>
 
                         <button type="submit" id="create-book" class="btn btn-info padded-button">Add this book</button>
-                        <button type="button" id="empty-form" class="btn btn-outline-info padded-button">Cancel and clear form</a>
+                        <button type="button" id="empty-form" class="btn btn-outline-info padded-button">Clear form</a>
                     </form>                 
 
                 </div> <!-- /container -->

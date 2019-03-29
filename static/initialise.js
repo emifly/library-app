@@ -93,6 +93,11 @@ $(function() {
         $('#author3-group').removeClass('hidden');
     });
 
+    // Clear form in resource add page
+    $('#empty-form').on('click', function() {
+        $('.form-control').val("");
+    });
+
 });
 
 // Taken from getbootstrap.com/docs/4.0/components/forms/#validation:
