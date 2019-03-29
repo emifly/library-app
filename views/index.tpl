@@ -30,7 +30,7 @@
                 
                 <hr class="section-divider">
                 
-                <h2 class="display-4 small-display">Library News</h2>
+                <h2 class="display-4 small-display">Meet the team</h2>
                 <div class="news-slider" style="margin-bottom: 50px">
                     <div class="slide"><img src="http://place-puppy.com/200x200"></div>
                     <div class="slide"><img src="http://place-puppy.com/200x200"></div>
