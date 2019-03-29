@@ -1,7 +1,7 @@
 # Configuration
 LOAN_PERIOD=14 # days
 MAX_RENEWAL=100 # days since issue
-
+MAX_ON_LOAN = 4 
 #####################
 
 import caribou
@@ -251,12 +251,21 @@ def issue_renew_book(db):
         """, (copy_id, signin_status.id)).fetchone()
 
     if current_status_query == None:
-        # Book not unreturned, so issue book
-        db.execute(f"""
-            INSERT INTO Loan (borrowerId, hardCopyId, dateBorrowed, dateDue)
-            VALUES (?, ?, ?, ?)
-            """, (signin_status.id, copy_id, today_date(), calculate_due_date(LOAN_PERIOD)))
-        return redirect('/account')
+        # Book not unreturned, so issue book if don't reaach book limits
+        num_loaned_to_user = already_out = db.execute("""
+            SELECT COUNT(id)
+            FROM Loan
+            WHERE borrowerId = ?        -- borrowed by this user 
+            AND   dateReturned IS NULL  -- not returned
+            """, (signin_status.id,)).fetchone()[0]
+        if num_loaned_to_user == MAX_ON_LOAN:
+            return template('error', error_message="You already have the maximum number of books on loan.", signin_status=signin_status)
+        else:
+            db.execute(f"""
+                INSERT INTO Loan (borrowerId, hardCopyId, dateBorrowed, dateDue)
+                VALUES (?, ?, ?, ?)
+                """, (signin_status.id, copy_id, today_date(), calculate_due_date(LOAN_PERIOD)))
+            return redirect('/account')
     else:
         # Book already taken out, so update due date if not already overdue.
         due_date = current_status_query[0]

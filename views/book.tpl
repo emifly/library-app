@@ -54,13 +54,13 @@
                                         <tr>
                                             <td>{{ copy['copyId'] }}</td>
                                             <td>
-                                                % if copy['dateReturned'] or not copy['dataBorrowed']:
+                                                % if copy['dateReturned'] or not copy['dateBorrowed']:
                                                     <form action="/renew" method="POST"  class="book-actions">
                                                         <input name="copy_id" type="hidden" value="{{ copy['copyId'] }}">
                                                         <button type="submit" class="btn btn-success">Available! Reserve now</button>
                                                     </form>
                                                 % else:
-                                                    <button type="button" class="btn btn-secondary disabled" disabled>{{ "Unavailable until " + str(dbdate_to_date(copy['dataBorrowed'] + 15)) }}</button>
+                                                    <button type="button" class="btn btn-secondary disabled" disabled>{{ "Unavailable until " + str(dbdate_to_date(copy['dateBorrowed'] + 15)) }}</button>
                                                 % end
                                             </td>
                                         </tr>
