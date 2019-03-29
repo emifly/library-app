@@ -1,4 +1,4 @@
-% rebase('base.tpl', indexpage=True, dispsignin=True, buttontext=buttontext, signout=signout)
+% rebase('base.tpl', index_page=True, disp_signin=True, btn_text=signin_status.btn_text, is_signed_in=signin_status.is_signed_in)
 
         <main role="main">
 

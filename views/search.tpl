@@ -1,4 +1,4 @@
-% rebase('base.tpl', searchpage=True, dispsignin=True, buttontext=buttontext, signout=signout)
+% rebase('base.tpl', search_page=True, disp_signin=True, btn_text=signin_status.btn_text, is_signed_in=signin_status.is_signed_in)
 
         <main role="main">
 
@@ -50,12 +50,12 @@
                         % for item in results:
                             <a href="/book/{{ item.id }}" class="list-group-item list-group-item-action flex-column align-items-start">
                                 <div class="d-flex w-100 justify-content-between">
-                                    <h5 class="mb-1">{{ item.getBookDetail('bookName') }}</h5>
-                                    % if item.getBookDetail('url'):
+                                    <h5 class="mb-1">{{ item.get_book_detail('bookName') }}</h5>
+                                    % if item.get_book_detail('url'):
                                         <small class="text-muted text-right">Online Resource<br><i class="fas fa-desktop"></i></small>
                                     % end
                                 </div>
-                                <p class="mb-1">{{ item.authorString }}</p>
+                                <p class="mb-1">{{ item.authors_string }}</p>
                                 <small class="text-muted">To come: publisher, location, year published</small>
                             </a>
                         % end

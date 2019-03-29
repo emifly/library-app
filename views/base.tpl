@@ -42,15 +42,15 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarsExampleDefault">
                 <ul class="navbar-nav mr-auto">
-                    % if defined('indexpage'):
+                    % if defined('index_page'):
                         <li class="nav-item active"><a class="nav-link" href="#">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="/search">Search</a></li>
                         <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
-                    % elif defined('searchpage'):
+                    % elif defined('search_page'):
                         <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                         <li class="nav-item active"><a class="nav-link" href="#">Search</a></li>
                         <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
-                    % elif defined('contactpage'):
+                    % elif defined('contact_page'):
                         <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="/search">Search</a></li>
                         <li class="nav-item active"><a class="nav-link" href="#">Contact</a></li>
@@ -60,10 +60,10 @@
                         <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
                     % end
                 </ul>
-                % if defined('dispsignin'):
-                    <a role="button" id="nav-btn" class="btn btn-outline-info my-2 my-sm-0 sm-hide" href="/account">{{ buttontext }}</a>
+                % if get('disp_signin', False):
+                    <a role="button" id="nav-btn" class="btn btn-outline-info my-2 my-sm-0 sm-hide" href="/account">{{ btn_text }}</a>
                 % end
-                % if get('signout', False):
+                % if get('is_signed_in', False):
                     <a role="button" id="signout-btn" class="btn btn-outline-info my-2 my-sm-0 sm-hide" href="/signout">Sign out</a>
                 % end
             </div>

@@ -188,6 +188,13 @@ div.white-bg {
     padding-bottom: 30px;
 }
 
+/*** Styles for error pages ***/
+
+.emphasised-detail {
+    font-style: italic;
+    font-weight: normal;
+}
+
 /*** Styles for account page ***/
 
 .table-info-striped tbody tr:nth-of-type(odd) {
@@ -207,7 +214,7 @@ div.white-bg {
 }
 
 span.badge {
-    font-weight: 400;
+    font-weight: normal;
     opacity: 0.75
 }
 

@@ -6,52 +6,52 @@ class User:
         self.id = id
         self.populate(db)
     def populate(self, db):
-        self.GenUserRow = db.execute("SELECT * FROM GenUser WHERE id = ?", (self.id,)).fetchone()
-        self.PublicUserRow = db.execute("SELECT * FROM PublicUser WHERE userId = ?", (self.id,)).fetchone()
-    def getGenDetail(self, detail):
-        return self.GenUserRow[detail]
-    def getPublicDetail(self, detail):
-        return self.PublicUserRow[detail]
-    def setGenDetail(self, db, detail, value):
-        keys = self.GenUserRow.keys()
+        self.GenUser_row = db.execute("SELECT * FROM GenUser WHERE id = ?", (self.id,)).fetchone()
+        self.PublicUser_row = db.execute("SELECT * FROM PublicUser WHERE userId = ?", (self.id,)).fetchone()
+    def get_GenUser_detail(self, detail):
+        return self.GenUser_row[detail]
+    def get_PublicUser_detail(self, detail):
+        return self.PublicUser_row[detail]
+    def set_GenUser_detail(self, db, detail, value):
+        keys = self.GenUser_row.keys()
         if detail in keys:
             query = "UPDATE GenUser SET " + detail + " = ? WHERE id = ?"
             db.execute(query, (value, self.id))
         db.execute("UPDATE GenUser SET ? = ? WHERE id = ?", (detail, value, self.id))
         # Could handle invalid inputs if necessary
-    def setGenDetails(self, db, formObj):
-        keys = self.GenUserRow.keys()
+    def set_GenUser_details(self, db, form_obj):
+        keys = self.GenUser_row.keys()
         for key in keys:
-            if key in formObj.keys():
+            if key in form_obj.keys():
                 query = "UPDATE GenUser SET " + key + " = ? WHERE id = ?"
-                db.execute(query, (formObj.get(key), self.id))
+                db.execute(query, (form_obj.get(key), self.id))
 
 class Book:
     def __init__(self, id, db):
         self.id = id
         self.populate(db)
     def populate(self, db):
-        self.BookDetailRow = db.execute("SELECT * FROM BookDetail WHERE id = ?", (self.id,)).fetchone()
-        self.AuthorRows = db.execute("SELECT * FROM Author INNER JOIN BookDetailAuthor ON authorId = Author.id WHERE bookId = ?", (self.id,)).fetchall()
-        self.authorString = compile_authors_string([row['name'] for row in self.AuthorRows])
-        self.onlineLink = f"/resource/{self.id}" if self.BookDetailRow['url'] else None
-    def getBookDetail(self, detail):
-        return self.BookDetailRow[detail]
+        self.BookDetail_row = db.execute("SELECT * FROM BookDetail WHERE id = ?", (self.id,)).fetchone()
+        self.Author_rows = db.execute("SELECT * FROM Author INNER JOIN BookDetailAuthor ON authorId = Author.id WHERE bookId = ?", (self.id,)).fetchall()
+        self.authors_string = compile_authors_string([row['name'] for row in self.Author_rows])
+        self.online_link = f"/resource/{self.id}" if self.BookDetail_row['url'] else None
+    def get_book_detail(self, detail):
+        return self.BookDetail_row[detail]
 
-def compile_authors_string(authorNames):
-    authorsString = ""
-    for i in range(0, len(authorNames)):
-        if i < len(authorNames) - 2:
-            authorsString += authorNames[i] + ", "
-        elif i == len(authorNames) - 2:
-            authorsString += authorNames[i] + " and "
+def compile_authors_string(author_names):
+    authors_string = ""
+    for i in range(0, len(author_names)):
+        if i < len(author_names) - 2:
+            authors_string += author_names[i] + ", "
+        elif i == len(author_names) - 2:
+            authors_string += author_names[i] + " and "
         else:
-            authorsString += authorNames[i]
-    return authorsString
+            authors_string += author_names[i]
+    return authors_string
 
-def return_purpose_text(requestObj):
-    if 'origin' in requestObj.params:
-        origin = requestObj.query['origin']
+def return_purpose_text(request_obj):
+    if 'origin' in request_obj.params:
+        origin = request_obj.query['origin']
         if origin == 'account':
             return " to view your account"
         elif origin == 'resource':
@@ -59,87 +59,87 @@ def return_purpose_text(requestObj):
         else:
             return ""
 
-def ordered_results(requestObj, db):
-    detail = requestObj.query['searchdata']
-    detailType = requestObj.query['field']
+def ordered_results(request_obj, db):
+    detail = request_obj.query['searchdata']
+    detail_type = request_obj.query['field']
     words = detail.split()          # Split searchdata into its constituent words
     if words == []:                 # Empty query should return all books
         results = db.execute("SELECT id FROM BookDetail").fetchall()
-    if detailType == "Title":
+    if detail_type == "Title":
         # Priority: anything that matches detail exactly > anything that contains detail > anything that partially matches detail
-        checkerValues = [detail, detail]
-        queryString = "SELECT id, CASE WHEN (bookName = ?) THEN 10 ELSE 0 END + \
+        checker_values = [detail, detail]
+        query_string = "SELECT id, CASE WHEN (bookName = ?) THEN 10 ELSE 0 END + \
             CASE WHEN (bookName LIKE '%' || ? || '%') THEN 5 ELSE 0 END"
         for i in range(1, len(words)):
-            queryString += " + CASE WHEN (bookName LIKE '%' || ? || '%') THEN 1 ELSE 0 END"
-            checkerValues.append(words[i])
-        queryString += " ratingSum FROM BookDetail WHERE ratingSum > "
-        queryString += str(1 if len(words) < 4 else len(words) - 2) + " ORDER BY ratingSum DESC"
-        results = db.execute(queryString, tuple(checkerValues)).fetchall()
+            query_string += " + CASE WHEN (bookName LIKE '%' || ? || '%') THEN 1 ELSE 0 END"
+            checker_values.append(words[i])
+        query_string += " ratingSum FROM BookDetail WHERE ratingSum > "
+        query_string += str(1 if len(words) < 4 else len(words) - 2) + " ORDER BY ratingSum DESC"
+        results = db.execute(query_string, tuple(checker_values)).fetchall()
     else:
-        checkerValues = [detail, detail]
-        queryString = "SELECT BookDetail.id, CASE WHEN (Author.name = ?) THEN 10 ELSE 0 END + \
+        checker_values = [detail, detail]
+        query_string = "SELECT BookDetail.id, CASE WHEN (Author.name = ?) THEN 10 ELSE 0 END + \
             CASE WHEN (Author.name LIKE '%' || ? || '%') THEN 5 ELSE 0 END"
         for i in range(1, len(words)):
-            queryString += " + CASE WHEN (Author.name LIKE '%' || ? || '%') THEN 1 ELSE 0 END"
-            checkerValues.append(words[i])
-        queryString += " ratingSum FROM BookDetail INNER JOIN BookDetailAuthor ON BookDetail.id = bookId \
+            query_string += " + CASE WHEN (Author.name LIKE '%' || ? || '%') THEN 1 ELSE 0 END"
+            checker_values.append(words[i])
+        query_string += " ratingSum FROM BookDetail INNER JOIN BookDetailAuthor ON BookDetail.id = bookId \
             INNER JOIN Author ON Author.id = authorId WHERE ratingSum > "
-        queryString += str(1 if len(words) < 4 else len(words) - 2)
-        queryString += " GROUP BY BookDetail.id ORDER BY ratingSum DESC"
-        results = db.execute(queryString, tuple(checkerValues)).fetchall()
+        query_string += str(1 if len(words) < 4 else len(words) - 2)
+        query_string += " GROUP BY BookDetail.id ORDER BY ratingSum DESC"
+        results = db.execute(query_string, tuple(checker_values)).fetchall()
     return results
 
-def verify_form(formObj, db):
-    fname = formObj.get('firstName')
-    lname = formObj.get('lastName')
-    email = formObj.get('emailAddr')
-    pcode = formObj.get('postcode')
-    cardNo = formObj.get('cardNo')
-    idRow = db.execute("SELECT * FROM GenUser WHERE (firstName, lastName, emailAddr, postcode) = (?, ?, ?, ?)", (fname, lname, email, pcode)).fetchone()
-    if idRow == None:
-        return True
+def verify_form(form_obj, db):
+    fname = form_obj.get('firstName')
+    lname = form_obj.get('lastName')
+    email = form_obj.get('emailAddr')
+    pcode = form_obj.get('postcode')
+    cardno = form_obj.get('cardNo')
+    id_row = db.execute("SELECT * FROM GenUser WHERE (firstName, lastName, emailAddr, postcode) = (?, ?, ?, ?)", (fname, lname, email, pcode)).fetchone()
+    if id_row == None:
+        return False
     else:
-        id = idRow[0]
-        publicIdRow = db.execute("SELECT * FROM PublicUser WHERE (cardNo) = (?)", (cardNo,)).fetchone()
-        if publicIdRow == None:
+        id = id_row[0]
+        public_id_row = db.execute("SELECT * FROM PublicUser WHERE (cardNo) = (?)", (cardno,)).fetchone()
+        if public_id_row == None:
             return False
-        elif publicIdRow['userId'] == id:
+        elif public_id_row['userId'] == id:
             return id
         else:
             return False
 
-def verify_signup(formObj, db):
-    fname = formObj.get('firstName')
-    lname = formObj.get('lastName')
-    email = formObj.get('emailAddr')
-    pcode = formObj.get('postcode')
-    cardNo = formObj.get('cardNo')
+def verify_signup(form_obj, db):
+    fname = form_obj.get('firstName')
+    lname = form_obj.get('lastName')
+    email = form_obj.get('emailAddr')
+    pcode = form_obj.get('postcode')
+    cardno = form_obj.get('cardNo')
     # Check if there is already an account associated with this library card number
-    check = db.execute("SELECT * FROM PublicUser WHERE (cardNo) = (?)", (cardNo,)).fetchone()
-    if check != None:
+    check_existing = db.execute("SELECT * FROM PublicUser WHERE (cardNo) = (?)", (cardno,)).fetchone()
+    if check_existing != None:
         return False
     else:
         db.execute("INSERT INTO GenUser (firstName, lastName, emailAddr, postcode) VALUES (?, ?, ?, ?);", (fname, lname, email, pcode))
         # Get row id of newly added GenUser row to use as foreign key in PublicUser table
-        newRowId = db.execute("SELECT last_insert_rowid()").fetchone()[0]
-        dateEntry = int(date.today().strftime('%Y%m%d'))
-        db.execute("INSERT INTO PublicUser (cardNo, regDate, userId) VALUES (?, ?, ?);", (cardNo, dateEntry, newRowId))
-        return newRowId
+        new_row_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+        date_entry = int(date.today().strftime('%Y%m%d'))
+        db.execute("INSERT INTO PublicUser (cardNo, regDate, userId) VALUES (?, ?, ?);", (cardno, date_entry, new_row_id))
+        return new_row_id
 
-def calculate_due_date(numDays):
+def calculate_due_date(num_days):
     """
     Represented as the "proleptic Gregorian ordinal". Basically the number of days since a date way in the past.
 
     Examples:
-        if numDays=0, then the book is due before the coming midnight.
-        if numDays=1, then the book should be returned the following day (or the day it was taken out).
+        if num_days=0, then the book is due before the coming midnight.
+        if num_days=1, then the book should be returned the following day (or the day it was taken out).
         if numdays=7, then the last day for returning will be the same day of the week as it was taken out.
     """
-    return numDays + date.toordinal(date.today())
+    return num_days + date.toordinal(date.today())
 
 def today_date():
     return date.toordinal(date.today())
 
-def dbdate_to_date(dbDate):
-    return date.fromordinal(dbDate)
+def dbdate_to_date(db_date):
+    return date.fromordinal(db_date)

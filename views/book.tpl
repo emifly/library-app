@@ -1,10 +1,10 @@
-% rebase('base.tpl', dispsignin=True, buttontext=buttontext, signout=signout)
+% rebase('base.tpl', disp_signin=True, btn_text=signin_status.btn_text, is_signed_in=signin_status.is_signed_in)
 
         <main role="main">
 
             <div class="jumbotron">
                 <div class="container">
-                    <h1 class="display-4">{{ book.BookDetailRow['bookName'] }}</h1>
+                    <h1 class="display-4">{{ book.BookDetail_row['bookName'] }}</h1>
                 </div>
             </div>
 
@@ -20,12 +20,12 @@
                                         <div class="form-group row">
                                             <label for="staticFName" class="col-sm-2 col-form-label">Author(s)</label>
                                             <div class="col-sm-10">
-                                                <input type="text" readonly class="form-control-plaintext" id="staticFName" value="{{ book.authorString }}">
+                                                <input type="text" readonly class="form-control-plaintext" id="staticFName" value="{{ book.authors_string }}">
                                             </div>
                                         </div>
                                         <button type="button" id="cancel" class="btn btn-info back-button padded-button">&laquo; Go back</button>
-                                        % if book.onlineLink:
-                                            <a href="{{ book.onlineLink }}">
+                                        % if book.online_link:
+                                            <a href="{{ book.online_link }}">
                                                 <button type="button" id="online-access" class="btn btn-success padded-button">View Online</button>
                                             </a>
                                         % else:
