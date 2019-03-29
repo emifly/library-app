@@ -135,11 +135,13 @@ def display_account_details(db):
             "book_id": book_id,
             "date_borrowed": dbdate_to_date(date_borrowed),
             "date_due": dbdate_to_date(date_due),
-            "max_renewal": dbdate_to_date(date_borrowed + MAX_RENEWAL)
+            "max_renewal": dbdate_to_date(date_borrowed + MAX_RENEWAL),
+            "renewal_length": (date.today().toordinal() + LOAN_PERIOD) - date_due
         }
         for book_name, book_id, copy_id, date_borrowed, date_due in loan_query_response]
 
-        return template('account', user=this_user, access_log=access_log, active_loans=active_loans, today=date.today())
+        return template('account', user=this_user, access_log=access_log, active_loans=active_loans, today=date.today(),
+                        LOAN_PERIOD=LOAN_PERIOD, MAX_RENEWAL=MAX_RENEWAL)
 @post('/account') # Accessed if user has updated their details
 def update_account_details(db):
     this_id = Signin_Status(cookie_key).id

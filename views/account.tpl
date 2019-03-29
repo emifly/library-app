@@ -13,6 +13,7 @@
                 <div class="container">
 
                     <h2 class="display-4 small-display">Active Loans</h2>
+                    <p> Books will be renewed for <strong>{{LOAN_PERIOD}}</strong> days from the renewal date, for a maximum of <strong>{{MAX_RENEWAL}}</strong> days from date of issue.</p>
                     <table class="table table-info-striped" style="text-align: center">
                         <thead>
                         <tr>
@@ -20,7 +21,7 @@
                             <th scope="col" style="text-align: left">Title</th>
                             <th scope="col" style="width: 15%; text-align: right">Borrowed</th>
                             <th scope="col" style="width: 15%; text-align: right">Due</th>
-                            <th scope="col" style="width: 30%">Action</th>
+                            <th scope="col" style="width: 30%">Renew&#47;Return</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -50,8 +51,10 @@
                                             <input name="copy_id" type="hidden" value="{{ loan_item['copy_id'] }}">
                                             % if loan_item["date_due"] == loan_item["max_renewal"]:
                                                 <button type="submit" class="btn btn-outline-secondary renew-return" disabled>Maxed</button>
+                                            % elif loan_item["renewal_length"] == 0:
+                                                <button type="submit" class="btn btn-outline-secondary renew-return" disabled>Wait</button>
                                             % elif today <= loan_item["date_due"]:
-                                                <button type="submit" class="btn btn-outline-info renew-return">Renew</button>
+                                                <button type="submit" class="btn btn-outline-info renew-return">&#43;{{ loan_item["renewal_length"] }} days</button>
                                             % else:
                                                 <button type="button" class="btn btn-outline-secondary renew-return" disabled>Overdue</button>
                                             % end
