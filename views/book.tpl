@@ -61,7 +61,7 @@
                                                         <input name="copy_id" type="hidden" value="{{ copy['copyId'] }}">
                                                         <button type="submit" class="btn btn-success">Issue book</button>
                                                     </form>
-                                                % elif copy['borrowerId'] == int(signin_status.id):
+                                                % elif signin_status.id and copy['borrowerId'] == int(signin_status.id):
                                                     % print("ingo")
                                                     <a href="/account">
                                                         <button type="button" class="btn btn-warning">{{ "Yours, due " + dbdate_to_date(copy['dateDue']).strftime("%d %B %Y")  }}</button>
