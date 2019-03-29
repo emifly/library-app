@@ -269,7 +269,7 @@ def issue_renew_book(db):
                     AND   dateReturned IS NULL                                      -- not returned
                 """, (copy_id, signin_status.id)).fetchone()[0]
             if copies_of_book_with_user != 0:
-                return template('error', error_message="You already a copy of this book.", signin_status=signin_status)
+                return template('error', error_message="You already have a copy of this book on loan.", signin_status=signin_status)
             else:
                 db.execute(f"""
                     INSERT INTO Loan (borrowerId, hardCopyId, dateBorrowed, dateDue)
