@@ -348,4 +348,8 @@ def confirm_return_book(db):
                 """, (today_date(), copy_id, signin_status.id))
             return redirect('/account')
 
+@get('/add/new')
+def display_add_form():
+    return template('add')
+
 run(host='localhost', port=8080, debug=True)

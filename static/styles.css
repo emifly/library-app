@@ -218,6 +218,25 @@ span.badge {
     opacity: 0.75
 }
 
+/*** Styles for adding books ***/
+
+div#authors {
+    margin-bottom: 1rem;
+}
+
+div#authors > div.form-group {
+    margin-bottom: 0;
+}
+
+div#authors > div.form-group.extra-author {
+    margin-top: 0.5rem;
+}
+
+.input-group > .input-group-append:not(:last-child) > .btn.btn-plus {
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+
 /*** Slick sliders ***/
 
 .slide {
