@@ -118,13 +118,7 @@ def display_account_details(db):
             }
             for book_name, resource_id, t, url in access_query_response]
         # Active Loan Details
-        loan_query_response = db.execute("""
-                        SELECT BookDetail.bookName, BookDetail.id, Loan.hardCopyId, Loan.dateBorrowed, Loan.dateDue FROM Loan
-                        INNER JOIN HardCopy ON Loan.hardCopyId = HardCopy.id
-                        INNER JOIN BookDetail ON HardCopy.bookId = BookDetail.id
-                        WHERE borrowerId = ? AND dateReturned IS NULL
-                        ORDER BY Loan.dateDue ASC
-                        """, (this_id,)).fetchall()
+        loan_query_response = get_user_loans(db, this_id)
         active_loans = [{
             "book_title": book_name,
             "copy_id": copy_id,

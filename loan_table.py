@@ -51,3 +51,12 @@ def return_copy(db, copy_id):
         WHERE hardCopyId = ?        -- this book
         AND   dateReturned IS NULL  -- not returned
         """, (today_date(), copy_id))
+
+def get_user_loans(db, user_id):
+    return db.execute("""
+        SELECT BookDetail.bookName, BookDetail.id, Loan.hardCopyId, Loan.dateBorrowed, Loan.dateDue FROM Loan
+        INNER JOIN HardCopy ON Loan.hardCopyId = HardCopy.id
+        INNER JOIN BookDetail ON HardCopy.bookId = BookDetail.id
+        WHERE borrowerId = ? AND dateReturned IS NULL
+        ORDER BY Loan.dateDue ASC
+        """, (user_id,)).fetchall()
