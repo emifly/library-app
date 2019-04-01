@@ -110,7 +110,6 @@ def display_account_details(db):
             }
             for book_name, resource_id, t, url in get_user_access_log(db, this_id)]
         # Active Loan Details
-        loan_query_response = get_user_loans(db, this_id)
         active_loans = [{
             "book_title": book_name,
             "copy_id": copy_id,
@@ -120,7 +119,7 @@ def display_account_details(db):
             "max_renewal": dbdate_to_date(date_borrowed + MAX_RENEWAL),
             "renewal_length": (date.today().toordinal() + LOAN_PERIOD) - date_due
         }
-        for book_name, book_id, copy_id, date_borrowed, date_due in loan_query_response]
+        for book_name, book_id, copy_id, date_borrowed, date_due in get_user_loans(db, this_id)]
 
         return template('account', user=this_user, access_log=access_log, active_loans=active_loans, today=date.today(),
                         LOAN_PERIOD=LOAN_PERIOD, MAX_RENEWAL=MAX_RENEWAL)
