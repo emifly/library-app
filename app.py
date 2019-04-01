@@ -24,6 +24,7 @@ cookie_key = "1234567890987654321"
 from configuration import *
 from classes_and_functions import *
 from loan_table import *
+from access_table import *
 
 class Signin_Status:
     def __init__(self, secret):
@@ -102,21 +103,12 @@ def display_account_details(db):
     else:
         this_user = User(this_id, db)
         # Access Log
-        access_query_response = db.execute("""
-                        SELECT BookDetail.bookName, BookDetail.id, PastAccess.dateAccessed, BookDetail.url
-                        FROM PastAccess
-                        INNER JOIN BookDetail
-                        ON PastAccess.bookId = BookDetail.id
-                        WHERE PastAccess.userId = ?
-                        ORDER BY PastAccess.dateAccessed DESC
-                        LIMIT 5
-                        """, (this_id,)).fetchall()
         access_log = [{
             "bookname": book_name,
             "url": f"/resource/{resource_id}" if url else None,
             "date": time.strftime("%H:%M %d %B %Y", time.localtime(t))
             }
-            for book_name, resource_id, t, url in access_query_response]
+            for book_name, resource_id, t, url in get_user_access_log(db, this_id)]
         # Active Loan Details
         loan_query_response = get_user_loans(db, this_id)
         active_loans = [{
@@ -210,7 +202,7 @@ def track_resource_access(db, resource_id):
         error_message_tail = " is not currently available online."
         return template('error', emph_details=resource_query_response[1], error_message=error_message_tail, back_button=True, signin_status=Signin_Status(cookie_key))
     # Otherwise record access and redirect to resource
-    db.execute("INSERT INTO PastAccess (userID, bookID, dateAccessed) VALUES (?,?,?)", (signin_status.id, resource_id, calendar.timegm(time.localtime())))
+    record_user_access(db, signin_status.id, resource_id)
     return redirect(resource_query_response[0])
 
 @post('/renew')
