@@ -1,10 +1,5 @@
 from classes_and_functions import today_date
 
-class ValidationError:
-
-    def __init__(self, message):
-        self.message = message
-
 def get_current_loan_status(db, copy_id):
     return db.execute("""
         SELECT borrowerId, dateBorrowed, dateDue
