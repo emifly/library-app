@@ -1,9 +1,3 @@
-# Configuration
-LOAN_PERIOD=14 # days
-MAX_RENEWAL=100 # days since issue
-MAX_ON_LOAN = 4 
-#####################
-
 import caribou
 db_file = 'librarytest.db'
 migrations_path = 'migrations'
@@ -27,8 +21,9 @@ install(SQLitePlugin(dbfile=db_file))
 cookie_key = "1234567890987654321"
 
 ## Classes and Functions
+from configuration import *
 from classes_and_functions import *
-from validation import *
+from loan_table import *
 
 class Signin_Status:
     def __init__(self, secret):
@@ -71,10 +66,6 @@ def error403(error):
 @error(404)
 def error404(error):
     error_text = "There doesn't seem to be anything here."
-    return template('error', error_message=error_text, signin_status=Signin_Status(cookie_key))
-@error(500)
-def error500(error):
-    error_text = "Oh dear, something went wrong..."
     return template('error', error_message=error_text, signin_status=Signin_Status(cookie_key))
 
 @get('/')
@@ -234,83 +225,35 @@ def issue_renew_book(db):
     if not signin_status.id:
         return redirect('/signin?origin=account')
 
+    user_id = signin_status.id
     copy_id = request.forms.get('copy_id')
 
-    # Redirect if book taken out by someone else
-    already_out = db.execute("""
-        SELECT COUNT(id)
-        FROM Loan
-        WHERE hardCopyId = ?        -- this book
-        AND   borrowerId != ?       -- borrowed by someone else 
-        AND   dateReturned IS NULL  -- not returned
-        """, (copy_id, signin_status.id)).fetchone()[0]
-    if already_out:
-        return template('error', error_message="Cannot renew as book on loan to another account.", back_button=True, signin_status=signin_status)
+    current_loan_status = get_current_loan_status(db, copy_id)
+    if current_loan_status:
+        # Currently on loan
+        if current_loan_status["borrowerID"] != int(signin_status.id):
+            return template('error', error_message="Cannot renew as book on loan to another account.", back_button=True, signin_status=signin_status)
 
-    current_status_query = db.execute("""
-        SELECT dateDue, dateBorrowed
-        FROM Loan
-        WHERE hardCopyId = ?        -- this book
-        AND   borrowerId = ?        -- borrowed by this user
-        AND   dateReturned IS NULL  -- not returned
-        """, (copy_id, signin_status.id)).fetchone()
-
-    if current_status_query == None:
-        # Book not unreturned, so issue book if don't reaach book limits and not already checked out a copy
-        num_loaned_to_user = db.execute("""
-            SELECT COUNT(id)
-            FROM Loan
-            WHERE borrowerId = ?        -- borrowed by this user 
-            AND   dateReturned IS NULL  -- not returned
-            """, (signin_status.id,)).fetchone()[0]
-        if num_loaned_to_user == MAX_ON_LOAN:
-            return template('error', error_message="You already have the maximum number of books on loan.", signin_status=signin_status)
-        else:
-            copies_of_book_with_user = db.execute("""
-                SELECT COUNT(*) FROM Loan
-                INNER JOIN HardCopy ON Loan.hardCopyId = HardCopy.id
-                WHERE HardCopy.bookId = (SELECT bookId FROM HardCopy WHERE id = ?)  -- Same book (in the abstract, not hard copy)
-                    AND   borrowerId  = ?                                           -- borrowed by this user
-                    AND   dateReturned IS NULL                                      -- not returned
-                """, (copy_id, signin_status.id)).fetchone()[0]
-            if copies_of_book_with_user != 0:
-                return template('error', error_message="You already have a copy of this book on loan.", signin_status=signin_status)
-            else:
-                db.execute(f"""
-                    INSERT INTO Loan (borrowerId, hardCopyId, dateBorrowed, dateDue)
-                    VALUES (?, ?, ?, ?)
-                    """, (signin_status.id, copy_id, today_date(), calculate_due_date(LOAN_PERIOD)))
-                return redirect('/account')
-    else:
-        # Book already taken out, so update due date if not already overdue.
-        due_date = current_status_query[0]
-        issue_date = current_status_query[1]
-        max_renew_date = issue_date + MAX_RENEWAL
-        if today_date() > due_date:
+        max_renew_date = current_loan_status["dateBorrowed"] + MAX_RENEWAL
+        renew_date = min(current_loan_status["dateDue"] + LOAN_PERIOD, max_renew_date, today_date()+LOAN_PERIOD)
+        if current_loan_status["dateDue"] < today_date():
             return template('error', error_message="Cannot renew as already overdue.", signin_status=signin_status)
-        elif calculate_due_date(LOAN_PERIOD) > max_renew_date:
-            if max_renew_date == due_date:
-                return template('error', error_message="Already renewed to maximum loan duration.", signin_status=signin_status)
-            else:
-                db.execute(f"""
-                    UPDATE Loan
-                    SET dateDue = ?
-                    WHERE hardCopyId = ?        -- this book
-                    AND   borrowerId = ?        -- borrowed by this user
-                    AND   dateReturned IS NULL  -- not returned
-                    """, (max_renew_date, copy_id, signin_status.id))
-                return redirect('/account')
-
-        else:
-            db.execute(f"""
-                UPDATE Loan
-                SET dateDue = ?
-                WHERE hardCopyId = ?        -- this book
-                AND   borrowerId = ?        -- borrowed by this user
-                AND   dateReturned IS NULL  -- not returned
-                """, (calculate_due_date(LOAN_PERIOD), copy_id, signin_status.id))
-            return redirect('/account')
-
+        if max_renew_date <= current_loan_status["dateDue"]:
+            return template('error', error_message="Already renewed to maximum loan duration.", signin_status=signin_status)
+        if renew_date <= current_loan_status["dateDue"]:
+            return template('error', error_message="Already renewed as long as possible for today.", signin_status=signin_status)
+        
+        renew_copy(db, copy_id, renew_date)
+        return redirect('/account')
+    else:
+         # Not currently on loan
+        if get_user_loan_count(db, user_id) >= MAX_ON_LOAN:
+            return template('error', error_message="You already have the maximum number of books on loan.", signin_status=signin_status)
+        if get_user_related_copy_count(db, user_id, copy_id) >= 1:
+            return template('error', error_message="You already have a copy of this book on loan.", signin_status=signin_status)
+        
+        issue_copy_to_user(db, user_id, copy_id, calculate_due_date(LOAN_PERIOD))
+        return redirect('/account')
 
 @post('/return')
 def confirm_return_book(db):
