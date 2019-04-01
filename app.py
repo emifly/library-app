@@ -28,6 +28,7 @@ cookie_key = "1234567890987654321"
 
 ## Classes and Functions
 from classes_and_functions import *
+from validation import *
 
 class Signin_Status:
     def __init__(self, secret):
