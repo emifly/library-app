@@ -29,6 +29,16 @@ cookie_key = "1234567890987654321"
 ## Classes and Functions
 from classes_and_functions import *
 
+def require_auth(fn):
+    def auth_wrapper(*args, **kwargs):
+        signin_status = Signin_Status(cookie_key)
+        if not signin_status.id:
+            return redirect('/signin')
+        else:
+            return fn(*args, **(kwargs.update({"signin_status", signin_status})))
+    return auth_wrapper
+
+
 class Signin_Status:
     def __init__(self, secret):
         self.secret = secret
@@ -70,10 +80,6 @@ def error403(error):
 @error(404)
 def error404(error):
     error_text = "There doesn't seem to be anything here."
-    return template('error', error_message=error_text, signin_status=Signin_Status(cookie_key))
-@error(500)
-def error500(error):
-    error_text = "Oh dear, something went wrong..."
     return template('error', error_message=error_text, signin_status=Signin_Status(cookie_key))
 
 @get('/')
