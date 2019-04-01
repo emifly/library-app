@@ -43,3 +43,11 @@ def renew_copy(db, copy_id, renew_date):
         WHERE hardCopyId = ?        -- this book
         AND   dateReturned IS NULL  -- not returned
         """, (renew_date, copy_id))
+
+def return_copy(db, copy_id):
+    db.execute(f"""
+        UPDATE Loan
+        SET dateReturned = ?
+        WHERE hardCopyId = ?        -- this book
+        AND   dateReturned IS NULL  -- not returned
+        """, (today_date(), copy_id))

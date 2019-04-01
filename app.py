@@ -225,13 +225,13 @@ def issue_renew_book(db):
     if not signin_status.id:
         return redirect('/signin?origin=account')
 
-    user_id = signin_status.id
+    user_id = int(signin_status.id)
     copy_id = request.forms.get('copy_id')
 
     current_loan_status = get_current_loan_status(db, copy_id)
     if current_loan_status:
         # Currently on loan
-        if current_loan_status["borrowerID"] != int(signin_status.id):
+        if current_loan_status["borrowerID"] != user_id:
             return template('error', error_message="Cannot renew as book on loan to another account.", back_button=True, signin_status=signin_status)
 
         max_renew_date = current_loan_status["dateBorrowed"] + MAX_RENEWAL
@@ -261,40 +261,18 @@ def confirm_return_book(db):
     if not signin_status.id:
         return redirect('/signin')
 
+    user_id = int(signin_status.id)
     copy_id = request.forms.get('copy_id')
 
-    # Redirect if book taken out by someone else
-    already_out = db.execute("""
-        SELECT COUNT(id)
-        FROM Loan
-        WHERE hardCopyId = ?        -- this book
-        AND   borrowerId != ?       -- borrowed by someone else 
-        AND   dateReturned IS NULL  -- not returned
-        """, (copy_id, signin_status.id)).fetchone()[0]
-    if already_out:
-        return template('error', error_message="Cannot return as book on loan to another account.", back_button=True, signin_status=signin_status)
+    current_loan_status = get_current_loan_status(db, copy_id)
 
-    current_status_query = db.execute("""
-        SELECT dateDue
-        FROM Loan
-        WHERE hardCopyId = ?        -- this book
-        AND   borrowerId = ?        -- borrowed by this user
-        AND   dateReturned IS NULL  -- not returned
-        """, (copy_id, signin_status.id)).fetchone()
+    if not current_loan_status:
+        return template('error', error_message="Cannot return as book not on loan.", back_button=True, signin_status=signin_status)
+    if current_loan_status["borrowerID"] != user_id:
+        return template('error', error_message="Cannot renew as book on loan to another account.", back_button=True, signin_status=signin_status)
 
-    if current_status_query == None:
-        # Book not unreturned
-        return template('error', error_message="Cannot return as book not on loan.", back_button=True, signin_status=Signin_Status(cookie_key))
-    else:
-        # Book taken out, so update due date if not already overdue.
-            db.execute(f"""
-                UPDATE Loan
-                SET dateReturned = ?
-                WHERE hardCopyId = ?        -- this book
-                AND   borrowerId = ?        -- borrowed by this user
-                AND   dateReturned IS NULL  -- not returned
-                """, (today_date(), copy_id, signin_status.id))
-            return redirect('/account')
+    return_copy(db, copy_id)
+    return redirect('/account')
 
 @get('/add/new')
 def display_add_form():
