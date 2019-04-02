@@ -47,7 +47,7 @@ def display_homepage():
 def serve_static(file):
     return static_file(file, root='./static')
 
- @get('/contact')
+@get('/contact')
 def display_contact():
     return template('contact', signin_status=Signin_Status(cookie_key))
 
