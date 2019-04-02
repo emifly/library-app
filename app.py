@@ -36,6 +36,27 @@ def require_auth(fn):
             return fn(*args, **kwargs)
     return auth_wrapper
 
+class Signin_Status:
+    def __init__(self, secret):
+        self.secret = secret
+        self.is_signed_in = True if request.get_cookie("id", secret=self.secret) else False
+        self.id = request.get_cookie("id", secret=self.secret)
+        self.btn_text = "My account" if self.is_signed_in else "Sign in"
+    def update_secret(self, new_secret):
+        self.secret = new_secret
+    def get_id(self):
+        return self.id
+    def sign_in(self, user_id):
+        response.set_cookie("id", str(user_id), self.secret)
+        self.id = user_id
+        self.is_signed_in = True
+        self.btn_text = "My account"
+    def sign_out(self):
+        response.delete_cookie("id")
+        self.id = None
+        self.is_signed_in = False
+        self.btn_text = "Sign in"
+
 
 ## == Routes == ##
 @get('/')
