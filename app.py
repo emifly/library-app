@@ -27,6 +27,17 @@ from loan_table import *
 from access_table import *
 from user_table import *
 
+def require_auth(fn):
+    def auth_wrapper(*args, **kwargs):
+        signin_status = Signin_Status(cookie_key)
+        if not signin_status.id:
+            return redirect('/signin')
+        else:
+            kwargs["signin_status"] = signin_status
+            return fn(*args, **kwargs)
+    return auth_wrapper
+
+
 class Signin_Status:
     def __init__(self, secret):
         self.secret = secret
@@ -96,41 +107,34 @@ def display_signin_get(db):
     else:
         return template('signin', error=False, purpose_text=return_purpose_text(request))
 
-@get('/account')
-def display_account_details(db):
-    this_id = Signin_Status(cookie_key).id
-    if not this_id:
-        return redirect('/signin?origin=account')
-    else:
-        this_user = PublicUser(db, this_id)
-        # Access Log
-        access_log = [{
-            "bookname": book_name,
-            "url": f"/resource/{resource_id}" if url else None,
-            "date": time.strftime("%H:%M %d %B %Y", time.localtime(t))
-            }
-            for book_name, resource_id, t, url in get_user_access_log(db, this_id)]
-        # Active Loan Details
-        active_loans = [{
-            "book_title": book_name,
-            "copy_id": copy_id,
-            "book_id": book_id,
-            "date_borrowed": dbdate_to_date(date_borrowed),
-            "date_due": dbdate_to_date(date_due),
-            "max_renewal": dbdate_to_date(date_borrowed + MAX_RENEWAL),
-            "renewal_length": (date.today().toordinal() + LOAN_PERIOD) - date_due
+@get('/account', apply=[require_auth])
+def display_account_details(signin_status, db):
+    this_id = signin_status.id
+    this_user = PublicUser(db, this_id)
+    # Access Log
+    access_log = [{
+        "bookname": book_name,
+        "url": f"/resource/{resource_id}" if url else None,
+        "date": time.strftime("%H:%M %d %B %Y", time.localtime(t))
         }
-        for book_name, book_id, copy_id, date_borrowed, date_due in get_user_loans(db, this_id)]
+        for book_name, resource_id, t, url in get_user_access_log(db, this_id)]
+    # Active Loan Details
+    active_loans = [{
+        "book_title": book_name,
+        "copy_id": copy_id,
+        "book_id": book_id,
+        "date_borrowed": dbdate_to_date(date_borrowed),
+        "date_due": dbdate_to_date(date_due),
+        "max_renewal": dbdate_to_date(date_borrowed + MAX_RENEWAL),
+        "renewal_length": (date.today().toordinal() + LOAN_PERIOD) - date_due
+    }
+    for book_name, book_id, copy_id, date_borrowed, date_due in get_user_loans(db, this_id)]
 
-        return template('account', user=this_user, access_log=access_log, active_loans=active_loans, today=date.today(),
-                        LOAN_PERIOD=LOAN_PERIOD, MAX_RENEWAL=MAX_RENEWAL)
-@post('/account') # Accessed if user has updated their details
-def update_account_details(db):
-    this_id = Signin_Status(cookie_key).id
-    if not this_id:
-        return redirect('/signin?origin=account')
-    else:
-        this_user = PublicUser(db, this_id)
+    return template('account', user=this_user, access_log=access_log, active_loans=active_loans, today=date.today(),
+                    LOAN_PERIOD=LOAN_PERIOD, MAX_RENEWAL=MAX_RENEWAL)
+@post('/account', apply=[require_auth]) # Accessed if user has updated their details
+def update_account_details(db, signin_status):
+        this_user = PublicUser(db, signin_status.id)
         this_user.update(request.forms, db=db)
         # Could just use the info we already have to render the page, but redirect to GET keeps it consistent if we make changes
         return redirect('/account')
@@ -189,11 +193,8 @@ def display_book_page(db, book_id):
 def display_contact():
     return template('contact', signin_status=Signin_Status(cookie_key))
 
-@get('/resource/<resource_id:int>')
-def track_resource_access(db, resource_id):
-    signin_status = Signin_Status(cookie_key)
-    if not signin_status.is_signed_in:
-        return redirect('/signin?origin=resource')
+@get('/resource/<resource_id:int>', apply=[require_auth])
+def track_resource_access(db, resource_id, signin_status):
     # Redirect if no online resource available
     resource_query_response = db.execute("SELECT url, bookName FROM BookDetail WHERE id = ?", (resource_id,)).fetchone()
     if not resource_query_response:
@@ -205,12 +206,8 @@ def track_resource_access(db, resource_id):
     record_user_access(db, signin_status.id, resource_id)
     return redirect(resource_query_response[0])
 
-@post('/renew')
-def issue_renew_book(db):
-    signin_status = Signin_Status(cookie_key)
-    if not signin_status.id:
-        return redirect('/signin?origin=account')
-
+@post('/renew', apply=[require_auth])
+def issue_renew_book(db, signin_status):
     user_id = int(signin_status.id)
     copy_id = request.forms.get('copy_id')
 
@@ -241,12 +238,8 @@ def issue_renew_book(db):
         issue_copy_to_user(db, user_id, copy_id, calculate_due_date(LOAN_PERIOD))
         return redirect('/account')
 
-@post('/return')
-def confirm_return_book(db):
-    signin_status = Signin_Status(cookie_key)
-    if not signin_status.id:
-        return redirect('/signin')
-
+@post('/return', apply=require_auth)
+def confirm_return_book(db, signin_status):
     user_id = int(signin_status.id)
     copy_id = request.forms.get('copy_id')
 
