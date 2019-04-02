@@ -135,7 +135,8 @@ def display_account_details(signin_status, db):
 @post('/account', apply=[require_auth]) # Accessed if user has updated their details
 def update_account_details(db, signin_status):
         this_user = PublicUser(db, signin_status.id)
-        this_user.update(request.forms, db=db)
+        this_user.update(request.forms)
+        this_user.save()
         # Could just use the info we already have to render the page, but redirect to GET keeps it consistent if we make changes
         return redirect('/account')
 

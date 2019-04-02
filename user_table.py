@@ -23,12 +23,10 @@ class GenUser():
         self.postcode = db_data["postcode"]
 
 
-    def update(self, form, db=None):
+    def update(self, form):
         for key, value in form.items():
             if hasattr(self, key):
                 setattr(self, key, value)
-        if db:
-            self.save(db)
 
     def save(self, db):
         db.execute("""
