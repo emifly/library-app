@@ -182,7 +182,7 @@ def display_search(db):
         results = ordered_results(request, db)
         return template('search', signin_status=Signin_Status(cookie_key), request=request, results=[Book(row['id'], db) for row in results])
 
-@get('/book/<book_id>')
+@get('/book/<book_id:int>')
 def display_book_page(db, book_id):
     this_book = Book(book_id, db)
     all_copies = db.execute("""
@@ -192,7 +192,7 @@ def display_book_page(db, book_id):
         """, (this_book.id,)).fetchall()
     return template('book', book=this_book, all_copies=all_copies, dbdate_to_date=dbdate_to_date, signin_status=Signin_Status(cookie_key))
 
-@get('/add/new')
+@get('/book/new')
 def display_add_form():
     return template('add')
 
