@@ -165,13 +165,12 @@ def display_account_details(signin_status, db):
 @post('/account', apply=[require_auth]) # Accessed if user has updated their details
 def update_account_details(db, signin_status):
         this_user = PublicUser.from_db(db, signin_status.id)
-        this_user.update(request.forms)
-        if this_user.validate():
+        try:
+            this_user.update(request.forms)
             this_user.save(db)
-            # Could just use the info we already have to render the page, but redirect to GET keeps it consistent if we make changes
             return redirect('/account')
-        else:
-            return template('error', error_message="Updated details fail validation.", back_button=True, signin_status=signin_status)
+        except ValidationError as e:
+            return template('error', emph_details="Validation error: ", error_message=e, back_button=True, signin_status=signin_status)
 
 
 # Book viewing
