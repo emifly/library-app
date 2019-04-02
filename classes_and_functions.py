@@ -1,5 +1,27 @@
 from datetime import date
 
+class Signin_Status:
+    def __init__(self, secret):
+        self.secret = secret
+        self.is_signed_in = True if request.get_cookie("id", secret=self.secret) else False
+        self.id = request.get_cookie("id", secret=self.secret)
+        self.btn_text = "My account" if self.is_signed_in else "Sign in"
+    def update_secret(self, new_secret):
+        self.secret = new_secret
+    def get_id(self):
+        return self.id
+    def sign_in(self, user_id):
+        response.set_cookie("id", str(user_id), self.secret)
+        self.id = user_id
+        self.is_signed_in = True
+        self.btn_text = "My account"
+    def sign_out(self):
+        response.delete_cookie("id")
+        self.id = None
+        self.is_signed_in = False
+        self.btn_text = "Sign in"
+
+
 class Book:
     def __init__(self, id, db):
         self.id = id
@@ -12,6 +34,7 @@ class Book:
     def get_book_detail(self, detail):
         return self.BookDetail_row[detail]
 
+
 def compile_authors_string(author_names):
     authors_string = ""
     for i in range(0, len(author_names)):
@@ -23,6 +46,7 @@ def compile_authors_string(author_names):
             authors_string += author_names[i]
     return authors_string
 
+
 def return_purpose_text(request_obj):
     if 'origin' in request_obj.params:
         origin = request_obj.query['origin']
@@ -32,6 +56,7 @@ def return_purpose_text(request_obj):
             return " to access this resource"
         else:
             return ""
+
 
 def ordered_results(request_obj, db):
     detail = request_obj.query['searchdata']
@@ -63,6 +88,7 @@ def ordered_results(request_obj, db):
         query_string += " GROUP BY BookDetail.id ORDER BY ratingSum DESC"
         results = db.execute(query_string, tuple(checker_values)).fetchall()
     return results
+
 
 def verify_form(form_obj, db):
     fname = form_obj.get('firstName')
@@ -100,6 +126,8 @@ def verify_signup(form_obj, db):
         date_entry = int(date.today().strftime('%Y%m%d'))
         db.execute("INSERT INTO PublicUser (cardNo, regDate, userId) VALUES (?, ?, ?);", (cardno, date_entry, new_row_id))
         return new_row_id
+
+
 
 # Simple functions that could be inlined but useful if database date format changes later
 def calculate_due_date(num_days):
