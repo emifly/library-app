@@ -1,4 +1,4 @@
-import calendar, time
+import time
 
 def get_user_access_log(db, user_id):
     return db.execute("""
@@ -14,4 +14,4 @@ def get_user_access_log(db, user_id):
 def record_user_access(db, user_id, resource_id):
     db.execute("""
     INSERT INTO PastAccess (userID, bookID, dateAccessed)
-    VALUES (?,?,?)""", (user_id, resource_id, calendar.timegm(time.localtime())))
+    VALUES (?,?,?)""", (user_id, resource_id, int(time.mktime(time.localtime()))))
