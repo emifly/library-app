@@ -46,9 +46,9 @@ class GenUser():
             =
             (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         WHERE id = ?
-        """, (self.first_name, self.middle_names, self.last_name, self.date_of_birth, \
-            self.email_address, self.phone_number_1_type, self.phone_number_1, \
-            self.phone_number_2_type, self.phone_number_2, self.address_line_1, \
+        """, (self.first_name, self.middle_names, self.last_name, self.date_of_birth,
+            self.email_address, self.phone_number_1_type, self.phone_number_1,
+            self.phone_number_2_type, self.phone_number_2, self.address_line_1,
             self.address_line_2, self.town, self.postcode, self.id))
         
 
@@ -56,8 +56,6 @@ class PublicUser(GenUser):
 
     def __init__(self, db_data):
         super().__init__(db_data)
-        # Make sure saved id is userId=GenUser.id, in case PublicUser is different
-
         self.card_number = db_data["cardNo"]
         self.reg_date = db_data["regDate"]
 
