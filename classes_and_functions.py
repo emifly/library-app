@@ -1,31 +1,5 @@
 from datetime import date
 
-## Classes and Functions
-class User:
-    def __init__(self, id, db):
-        self.id = id
-        self.populate(db)
-    def populate(self, db):
-        self.GenUser_row = db.execute("SELECT * FROM GenUser WHERE id = ?", (self.id,)).fetchone()
-        self.PublicUser_row = db.execute("SELECT * FROM PublicUser WHERE userId = ?", (self.id,)).fetchone()
-    def get_GenUser_detail(self, detail):
-        return self.GenUser_row[detail]
-    def get_PublicUser_detail(self, detail):
-        return self.PublicUser_row[detail]
-    def set_GenUser_detail(self, db, detail, value):
-        keys = self.GenUser_row.keys()
-        if detail in keys:
-            query = "UPDATE GenUser SET " + detail + " = ? WHERE id = ?"
-            db.execute(query, (value, self.id))
-        db.execute("UPDATE GenUser SET ? = ? WHERE id = ?", (detail, value, self.id))
-        # Could handle invalid inputs if necessary
-    def set_GenUser_details(self, db, form_obj):
-        keys = self.GenUser_row.keys()
-        for key in keys:
-            if key in form_obj.keys():
-                query = "UPDATE GenUser SET " + key + " = ? WHERE id = ?"
-                db.execute(query, (form_obj.get(key), self.id))
-
 class Book:
     def __init__(self, id, db):
         self.id = id

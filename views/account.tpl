@@ -4,7 +4,7 @@
 
             <div class="jumbotron">
                 <div class="container">
-                    <h1 class="display-4">Hello, {{ user.get_GenUser_detail('firstName') }}</h1>
+                    <h1 class="display-4">Hello, {{ user.first_name }}</h1>
                 </div>
             </div>
 
@@ -66,7 +66,7 @@
                                         </form>
                                     </td>
                                 </tr>
-                            %end
+                            % end
                         </tbody>
                     </table>
 
@@ -77,83 +77,83 @@
                                 <h2 class="display-4 small-display">Your account details</h2>
                                 <form class="editable-details" method="post">
                                     <div class="form-group row">
-                                        <label for="static-firstName" class="col-sm-3 col-form-label">First Name</label>
+                                        <label for="static-first_name" class="col-sm-3 col-form-label">First Name</label>
                                         <div class="col-sm-9">
-                                            <input type="text" name="firstName" readonly class="form-control-plaintext" id="static-firstName" value="{{ user.get_GenUser_detail('firstName') if user.get_GenUser_detail('firstName') != None else '' }}">
+                                            <input type="text" name="first_name" readonly class="form-control-plaintext" id="static-first_name" value="{{ user.first_name or '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="static-middleNames" class="col-sm-3 col-form-label">Middle Names</label>
+                                        <label for="static-middle_names" class="col-sm-3 col-form-label">Middle Names</label>
                                         <div class="col-sm-9">
-                                            <input type="text" name="middleNames" readonly class="form-control-plaintext" id="static-middleNames" value="{{ user.get_GenUser_detail('middleNames') if user.get_GenUser_detail('middleNames') != None else '' }}">
+                                            <input type="text" name="middle_names" readonly class="form-control-plaintext" id="static-middle_names" value="{{ user.middle_names or '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="static-lastName" class="col-sm-3 col-form-label">Last Name</label>
+                                        <label for="static-last_name" class="col-sm-3 col-form-label">Last Name</label>
                                         <div class="col-sm-9">
-                                            <input type="text" name="lastName" readonly class="form-control-plaintext" id="static-lastName" value="{{ user.get_GenUser_detail('lastName') if user.get_GenUser_detail('lastName') != None else '' }}">
+                                            <input type="text" name="last_name" readonly class="form-control-plaintext" id="static-last_name" value="{{ user.last_name or '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="static-dateOfBirth" class="col-sm-3 col-form-label">Date of Birth</label>
+                                        <label for="static-date_of_birth" class="col-sm-3 col-form-label">Date of Birth</label>
                                         <div class="col-sm-9">
-                                            <input type="date" name="dateOfBirth" readonly class="form-control-plaintext" id="static-dateOfBirth" value="{{ user.get_GenUser_detail('dateOfBirth') if user.get_GenUser_detail('dateOfBirth') != None else '' }}">
+                                            <input type="date" name="date_of_birth" readonly class="form-control-plaintext" id="static-date_of_birth" value="{{ user.date_of_birth or '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="static-emailAddr" class="col-sm-3 col-form-label">Email</label>
+                                        <label for="static-email_address" class="col-sm-3 col-form-label">Email</label>
                                         <div class="col-sm-9">
-                                            <input type="text" name="emailAddr" readonly class="form-control-plaintext" id="static-emailAddr" value="{{ user.get_GenUser_detail('emailAddr') if user.get_GenUser_detail('emailAddr') != None else '' }}">
+                                            <input type="text" name="email-email_address" readonly class="form-control-plaintext" id="static-email_address" value="{{ user.email_address or '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="static-phoneNo1" class="col-sm-3 col-form-label">Phone Number</label>
+                                        <label for="static-phone_number_1" class="col-sm-3 col-form-label">Phone Number</label>
                                         <div class="col-sm-9">
-                                            <input type="text" name="phoneNo1" readonly class="form-control-plaintext" id="static-phoneNo1" value="{{ user.get_GenUser_detail('phoneNo1') if user.get_GenUser_detail('phoneNo1') != None else '' }}">
+                                            <input type="text" name="phone_number_1" readonly class="form-control-plaintext" id="static-phone_number_1" value="{{ user.phone_number_1 or '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="static-phoneNo1Type" class="col-sm-3 col-form-label">Phone Number Type</label>
+                                        <label for="static-phone_number_1_type" class="col-sm-3 col-form-label">Phone Number Type</label>
                                         <div class="col-sm-9">
-                                            <input type="text" name="phoneNo1Type" readonly class="form-control-plaintext" id="static-phoneNo1Type" value="{{ user.get_GenUser_detail('phoneNo1Type') if user.get_GenUser_detail('phoneNo1Type') != None else '' }}">
+                                            <input type="text" name="phone_number_1_type" readonly class="form-control-plaintext" id="static-phone_number_1_type" value="{{ user.phone_number_1_type or '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="static-phoneNo2" class="col-sm-3 col-form-label">Alternative Phone Number</label>
+                                        <label for="static-phone_number_2" class="col-sm-3 col-form-label">Alternative Phone Number</label>
                                         <div class="col-sm-9">
-                                            <input type="text" name="phoneNo2" readonly class="form-control-plaintext" id="static-phoneNo2" value="{{ user.get_GenUser_detail('phoneNo2') if user.get_GenUser_detail('phoneNo2') != None else '' }}">
+                                            <input type="text" name="phone_number_2" readonly class="form-control-plaintext" id="static-phone_number_2" value="{{ user.phone_number_2 or '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="static-phoneNo2Type" class="col-sm-3 col-form-label">Alternative Phone Number Type</label>
+                                        <label for="static-phone_number_2_type" class="col-sm-3 col-form-label">Alternative Phone Number Type</label>
                                         <div class="col-sm-9">
-                                            <input type="text" name="phoneNo2Type" readonly class="form-control-plaintext" id="static-phoneNo2Type" value="{{ user.get_GenUser_detail('phoneNo2Type') if user.get_GenUser_detail('phoneNo2Type') != None else '' }}">
+                                            <input type="text" name="phone_number_2_type" readonly class="form-control-plaintext" id="static-phone_number_2_type" value="{{ user.phone_number_2_type or '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="static-addrLine1" class="col-sm-3 col-form-label">Address Line 1</label>
+                                        <label for="static-address_line_1" class="col-sm-3 col-form-label">Address Line 1</label>
                                         <div class="col-sm-9">
-                                            <input type="text" name="addrLine1" readonly class="form-control-plaintext" id="static-addrLine1" value="{{ user.get_GenUser_detail('addrLine1') if user.get_GenUser_detail('addrLine1') != None else '' }}">
+                                            <input type="text" name="address_line_1" readonly class="form-control-plaintext" id="static-address_line_1" value="{{ user.address_line_1 or '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="static-addrLine2" class="col-sm-3 col-form-label">Address Line 2</label>
+                                        <label for="static-address_line_2" class="col-sm-3 col-form-label">Address Line 2</label>
                                         <div class="col-sm-9">
-                                            <input type="text" name="addrLine2" readonly class="form-control-plaintext" id="static-addrLine2" value="{{ user.get_GenUser_detail('addrLine2') if user.get_GenUser_detail('addrLine2') != None else '' }}">
+                                            <input type="text" name="address_line_2" readonly class="form-control-plaintext" id="static-address_line_2" value="{{ user.address_line_2 or '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="static-townCity" class="col-sm-3 col-form-label">Town/City</label>
+                                        <label for="static-town" class="col-sm-3 col-form-label">Town/City</label>
                                         <div class="col-sm-9">
-                                            <input type="text" name="townCity" readonly class="form-control-plaintext" id="static-townCity" value="{{ user.get_GenUser_detail('townCity') if user.get_GenUser_detail('townCity') != None else '' }}">
+                                            <input type="text" name="town" readonly class="form-control-plaintext" id="static-town" value="{{ user.town or '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label for="static-postcode" class="col-sm-3 col-form-label">Postcode</label>
                                         <div class="col-sm-9">
-                                            <input type="text" name="postcode" readonly class="form-control-plaintext" id="static-postcode" value="{{ user.get_GenUser_detail('postcode') if user.get_GenUser_detail('postcode') != None else '' }}">
+                                            <input type="text" name="postcode" readonly class="form-control-plaintext" id="static-postcode" value="{{ user.postcode or '' }}">
                                         </div>
-                                    </div>=
+                                    </div>
                                     <button type="button" id="edit" class="btn btn-info padded-button">Edit my details</button>
                                     <button type="submit" id="submit" class="hidden btn btn-info padded-button">Save changes</button>
                                     <a role="button" id="cancel" class="hidden btn btn-outline-info padded-button" href="/account">Cancel</a>
