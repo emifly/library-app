@@ -1,13 +1,6 @@
 class GenUser():
-    def __init__(self, db, id):
-        db_data = db.execute("""
-            SELECT *
-            FROM GenUser 
-            LEFT JOIN PublicUser
-            ON GenUser.id = PublicUser.userId
-            WHERE GenUser.id = ?
-            """, (id,)).fetchone()
-        self.id = id
+    def __init__(self, db_data):
+        self.id = db_data["id"]
         self.first_name = db_data["firstName"]
         self.middle_names = db_data["middleNames"]
         self.last_name = db_data["lastName"]
@@ -22,6 +15,14 @@ class GenUser():
         self.town = db_data["townCity"]
         self.postcode = db_data["postcode"]
 
+    @classmethod
+    def from_db(cls, db, id):
+        db_data = db.execute("""
+            SELECT *
+            FROM GenUser
+            WHERE GenUser.id = ?
+            """, (id,)).fetchone()
+        return cls(db_data)
 
     def update(self, form):
         for key, value in form.items():
@@ -45,15 +46,24 @@ class GenUser():
 
 class PublicUser(GenUser):
 
-    def __init__(self, db, id):
-        super().__init__(db, id)
-        db_data = db.execute("""
-            SELECT *
-            FROM PublicUser 
-            WHERE userId = ?
-            """, (id,)).fetchone()
+    def __init__(self, db_data):
+        super().__init__(db_data)
+        # Make sure saved id is userId=GenUser.id, in case PublicUser is different
+        self.id = db_data["userId"]
+
         self.card_number = db_data["cardNo"]
         self.reg_date = db_data["regDate"]
+
+    @classmethod
+    def from_db(cls, db, id):
+        db_data = db.execute("""
+            SELECT *
+            FROM GenUser 
+            LEFT JOIN PublicUser
+            ON GenUser.id = PublicUser.userId
+            WHERE GenUser.id = ?
+            """, (id,)).fetchone()
+        return cls(db_data)
 
     def save(self, db):
         super().save(db)

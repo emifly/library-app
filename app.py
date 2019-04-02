@@ -110,7 +110,7 @@ def display_signin_get(db):
 @get('/account', apply=[require_auth])
 def display_account_details(signin_status, db):
     this_id = signin_status.id
-    this_user = PublicUser(db, this_id)
+    this_user = PublicUser.from_db(db, this_id)
     # Access Log
     access_log = [{
         "bookname": book_name,
@@ -134,9 +134,9 @@ def display_account_details(signin_status, db):
                     LOAN_PERIOD=LOAN_PERIOD, MAX_RENEWAL=MAX_RENEWAL)
 @post('/account', apply=[require_auth]) # Accessed if user has updated their details
 def update_account_details(db, signin_status):
-        this_user = PublicUser(db, signin_status.id)
+        this_user = PublicUser.from_db(db, signin_status.id)
         this_user.update(request.forms)
-        this_user.save()
+        this_user.save(db)
         # Could just use the info we already have to render the page, but redirect to GET keeps it consistent if we make changes
         return redirect('/account')
 
@@ -158,7 +158,7 @@ def display_confirmation(db):
     if new_user_id == False:
         return redirect('/signup?error=True')
     else:
-        new_user = PublicUser(db, new_user_id)
+        new_user = PublicUser.from_db(db, new_user_id)
         return template('confirmation', user=new_user)
 # Redirect to home if anyone tries to access the confirmation page via get request
 @get('/confirmation')
