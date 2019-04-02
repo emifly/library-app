@@ -1,4 +1,4 @@
-class User:
+class GenUser():
     def __init__(self, db, id):
         db_data = db.execute("""
             SELECT *
@@ -21,18 +21,41 @@ class User:
         self.address_line_2 = db_data["addrLine2"]
         self.town = db_data["townCity"]
         self.postcode = db_data["postcode"]
+
+
+    def update(self, form, db=None):
+        for key, value in form.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+        if db:
+            self.save(db)
+
+    def save(self, db):
+        db.execute("""
+        UPDATE GenUser
+        SET (firstName, middleNames, lastName, dateOfBirth, emailAddr,
+            phoneNo1Type, phoneNo1, phoneNo2Type, phoneNo2, addrLine1,
+            addrLine2, townCity, postcode)
+            =
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        WHERE id = ?
+        """, (self.first_name, self.middle_names, self.last_name, self.date_of_birth, \
+            self.email_address, self.phone_number_1_type, self.phone_number_1, \
+            self.phone_number_2_type, self.phone_number_2, self.address_line_1, \
+            self.address_line_2, self.town, self.postcode, self.id))
+        
+
+class PublicUser(GenUser):
+
+    def __init__(self, db, id):
+        super().__init__(db, id)
+        db_data = db.execute("""
+            SELECT *
+            FROM PublicUser 
+            WHERE userId = ?
+            """, (id,)).fetchone()
         self.card_number = db_data["cardNo"]
         self.reg_date = db_data["regDate"]
-    # def set_GenUser_detail(self, db, detail, value):
-    #     keys = self.GenUser_row.keys()
-    #     if detail in keys:
-    #         query = "UPDATE GenUser SET " + detail + " = ? WHERE id = ?"
-    #         db.execute(query, (value, self.id))
-    #     db.execute("UPDATE GenUser SET ? = ? WHERE id = ?", (detail, value, self.id))
-    #     # Could handle invalid inputs if necessary
-    # def set_GenUser_details(self, db, form_obj):
-    #     keys = self.GenUser_row.keys()
-    #     for key in keys:
-    #         if key in form_obj.keys():
-    #             query = "UPDATE GenUser SET " + key + " = ? WHERE id = ?"
-    #             db.execute(query, (form_obj.get(key), self.id))
+
+    def save(self, db):
+        super().save(db)

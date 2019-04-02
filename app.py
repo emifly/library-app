@@ -102,7 +102,7 @@ def display_account_details(db):
     if not this_id:
         return redirect('/signin?origin=account')
     else:
-        this_user = User(db, this_id)
+        this_user = PublicUser(db, this_id)
         # Access Log
         access_log = [{
             "bookname": book_name,
@@ -130,8 +130,8 @@ def update_account_details(db):
     if not this_id:
         return redirect('/signin?origin=account')
     else:
-        this_user = User(db, this_id)
-        this_user.set_GenUser_details(db, request.forms)
+        this_user = PublicUser(db, this_id)
+        this_user.update(request.forms, db=db)
         # Could just use the info we already have to render the page, but redirect to GET keeps it consistent if we make changes
         return redirect('/account')
 
@@ -153,7 +153,7 @@ def display_confirmation(db):
     if new_user_id == False:
         return redirect('/signup?error=True')
     else:
-        new_user = User(db, new_user_id)
+        new_user = PublicUser(db, new_user_id)
         return template('confirmation', user=new_user)
 # Redirect to home if anyone tries to access the confirmation page via get request
 @get('/confirmation')
