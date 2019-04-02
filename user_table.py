@@ -84,8 +84,8 @@ class PublicUser(GenUser):
 
     def validate(self):
         return all((
-            super().validate(),
-            self.card_number > 0
+            self.card_number > 0,
+            super().validate()
         ))
 
     def save(self, db):
