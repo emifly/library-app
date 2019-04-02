@@ -29,6 +29,14 @@ class GenUser():
             if hasattr(self, key):
                 setattr(self, key, value)
 
+    def validate(self):
+        return all((
+            len(self.first_name) > 0,
+            len(self.last_name) > 0,
+            len(self.email_address) > 0,
+            len(self.postcode) > 0
+            ))
+
     def save(self, db):
         db.execute("""
         UPDATE GenUser
@@ -64,6 +72,16 @@ class PublicUser(GenUser):
             WHERE GenUser.id = ?
             """, (id,)).fetchone()
         return cls(db_data)
+
+    def validate(self):
+        return all((
+            super().validate(),
+            self.card_number > 0
+        ))
+
+    def update(self, form):
+        super().update(form)
+        self.card_number = int(self.card_number)
 
     def save(self, db):
         super().save(db)

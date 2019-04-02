@@ -166,9 +166,12 @@ def display_account_details(signin_status, db):
 def update_account_details(db, signin_status):
         this_user = PublicUser.from_db(db, signin_status.id)
         this_user.update(request.forms)
-        this_user.save(db)
-        # Could just use the info we already have to render the page, but redirect to GET keeps it consistent if we make changes
-        return redirect('/account')
+        if this_user.validate():
+            this_user.save(db)
+            # Could just use the info we already have to render the page, but redirect to GET keeps it consistent if we make changes
+            return redirect('/account')
+        else:
+            return template('error', error_message="Updated details fail validation.", back_button=True, signin_status=signin_status)
 
 
 # Book viewing
