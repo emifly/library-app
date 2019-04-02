@@ -1,6 +1,6 @@
 class GenUser():
     def __init__(self, db_data):
-        self.id = db_data["id"]
+        self.id = db_data["GenUserId"]
         self.first_name = db_data["firstName"]
         self.middle_names = db_data["middleNames"]
         self.last_name = db_data["lastName"]
@@ -18,7 +18,7 @@ class GenUser():
     @classmethod
     def from_db(cls, db, id):
         db_data = db.execute("""
-            SELECT *
+            SELECT GenUser.id as GenUserId, *
             FROM GenUser
             WHERE GenUser.id = ?
             """, (id,)).fetchone()
@@ -57,7 +57,6 @@ class PublicUser(GenUser):
     def __init__(self, db_data):
         super().__init__(db_data)
         # Make sure saved id is userId=GenUser.id, in case PublicUser is different
-        self.id = db_data["userId"]
 
         self.card_number = db_data["cardNo"]
         self.reg_date = db_data["regDate"]
@@ -65,7 +64,7 @@ class PublicUser(GenUser):
     @classmethod
     def from_db(cls, db, id):
         db_data = db.execute("""
-            SELECT *
+            SELECT GenUser.id as GenUserId, *
             FROM GenUser 
             LEFT JOIN PublicUser
             ON GenUser.id = PublicUser.userId
