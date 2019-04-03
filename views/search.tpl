@@ -53,14 +53,14 @@
                                     <div class="d-flex flex-column">
                                         <h5 class="mb-1">{{ item.get_book_detail('bookName') }}</h5>
                                         <p class="mb-1">{{ item.authors_string }}</p>
-                                        <small class="text-muted">To come: publisher, location, year published</small>
                                     </div>
-                                    <div class="d-flex flex-column">
+                                    <div class="d-flex flex-column" style="flex: 0 1 8em">
                                         % if item.get_book_detail('url'):
                                             <small class="text-muted text-right"><i class="fas fa-desktop"></i>&nbsp;&nbsp;Online Resource</small>
                                         % end
                                     </div>
                                 </div>
+                                <small class="text-muted">To come: publisher, location, year published</small>
                             </a>
                         % end
                         </div>
