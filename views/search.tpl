@@ -48,19 +48,19 @@
                     % else:
                         <div class="list-group" style="padding-bottom: 30px;">
                         % for item in results:
-                            <a href="/book/{{ item.id }}" class="list-group-item list-group-item-action flex-column align-items-start">
+                            <a href="/book/{{ item.id }}" class="list-group-item list-group-item-action align-items-start">
                                 <div class="d-flex w-100 justify-content-between flex-wrap">
                                     <div class="d-flex flex-column">
                                         <h5 class="mb-1">{{ item.get_book_detail('bookName') }}</h5>
                                         <p class="mb-1">{{ item.authors_string }}</p>
                                     </div>
-                                    <div class="d-flex flex-column" style="flex: 0 1 8em">
+                                    <div class="d-flex flex-column" style="flex: 1 1 8em">
                                         % if item.get_book_detail('url'):
                                             <small class="text-muted text-right"><i class="fas fa-desktop"></i>&nbsp;&nbsp;Online Resource</small>
                                         % end
                                     </div>
+                                    <small class="text-muted">To come: publisher, location, year published</small>
                                 </div>
-                                <small class="text-muted">To come: publisher, location, year published</small>
                             </a>
                         % end
                         </div>
