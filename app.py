@@ -218,14 +218,18 @@ def display_add_form(db, signin_status):
 @post('/book/new', apply=[require_auth])
 def add_book(db, signin_status):
     isbn = request.forms.get('isbn')
-
-    print('isbn')
+    if not isbn:
+        return template('error', error_message="Cannot add book without an ISBN.", back_button=True, signin_status=signin_status)
 
     bookdetail_id = db.execute("""
         SELECT id FROM BookDetail
         WHERE isbn = ?
         """, (isbn,)).fetchone()
-    if not bookdetail_id:
+    if bookdetail_id:
+        bookdetail_id = bookdetail_id[0]
+    else:
+        if any(request.forms.get('detail') == "" for detail in ('bookName', 'yearPublished', 'author1')):
+            return template('error', error_message="Not enough info.", back_button=True, signin_status=signin_status)
         # Insert book details
         bookdetail_id = db.execute(f"""
             INSERT INTO BookDetail (bookName, yearPublished, isbn)
@@ -240,20 +244,19 @@ def add_book(db, signin_status):
                     SELECT id from Author
                     Where name = ?
                     """, (author,)).fetchone()
-                if not author_id:
+                if author_id:
+                    author_id = author_id[0]
+                else:
                     author_id = db.execute(f"""
                         INSERT INTO Author (name)
                         VALUES (?)
                         """, (author,)).lastrowid
-                else:
-                    author_id = author_id[0]
+                    
                 db.execute("""
                     INSERT INTO BookDetailAuthor (bookId, authorId, orderPos)
                     VALUES (?,?,?)
                     """, (bookdetail_id, author_id, author_num))
-    else:
-        bookdetail_id = bookdetail_id[0]
-    
+
     # Add new copy
     db.execute("""
                 INSERT INTO HardCopy (bookId)
