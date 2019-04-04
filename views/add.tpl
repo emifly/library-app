@@ -1,4 +1,4 @@
-% rebase('base.tpl',   add_page=True, is_signed_in=True)
+% rebase('base.tpl', add_page=True, is_signed_in=True)
 
         <main role="main">
 
@@ -92,6 +92,14 @@
                             <input type="radio" name="resourceType" value="onlineResource" class="custom-control-input" id="onlineResource" name="radio-stacked" required>
                             <label class="custom-control-label" for="onlineResource">This is an online resource</label>
                             <div class="invalid-feedback">Please indicate the type of resource.</div>
+                        </div>
+
+                        <div class="form-group hidden" id="url-group">
+                            <label for="url">URL</label>
+                            <input type="text" name="url" class="form-control" id="url" placeholder="URL">
+                            <div class="invalid-feedback">
+                                Please enter the url of the online resource.
+                            </div>
                         </div>
 
                         <button type="submit" id="create-book" class="btn btn-info padded-button">Add this book</button>

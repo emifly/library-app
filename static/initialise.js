@@ -185,3 +185,15 @@ function fetchDetails() {
             errorFn("Error");
         });
 }
+
+function toggleURLField(activate) {
+    if (activate) {
+        document.getElementById("url-group").classList.remove("hidden")
+        document.getElementById("url").required = true;
+    }
+    else{
+        document.getElementById("url-group").classList.add("hidden")
+        document.getElementById("url").required = false;
+    }
+    }
+}
