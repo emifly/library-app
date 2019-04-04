@@ -14,11 +14,11 @@
 
                     <h2 class="display-4 small-display">Add a new book or resource to the database</h2>
 
-                    <form class="editable-details needs-validation" novalidate>
+                    <form action="/book/new" method="POST" class="editable-details needs-validation" novalidate>
 
                         <div class="form-group">
                             <label for="isbn">ISBN</label>
-                            <input type="text" class="form-control" id="isbn" placeholder="ISBN" >
+                            <input type="text" name="isbn" class="form-control" id="isbn" placeholder="ISBN" >
                         </div>
 
                         <div class="form-group">

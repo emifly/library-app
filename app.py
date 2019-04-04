@@ -211,9 +211,57 @@ def display_book_page(db, book_id):
         """, (this_book.id,)).fetchall()
     return template('book', book=this_book, all_copies=all_copies, dbdate_to_date=dbdate_to_date, signin_status=Signin_Status(cookie_key))
 
-@get('/book/new')
+@get('/book/new', apply=[require_auth])
 def display_add_form():
     return template('add')
+
+@post('/book/new', apply=[require_auth])
+def add_book(db):
+    isbn = request.forms.get('isbn')
+
+    print('isbn')
+
+    bookdetail_id = db.execute("""
+        SELECT id FROM BookDetail
+        WHERE isbn = ?
+        """, (isbn,)).fetchone()
+    if not bookdetail_id:
+        # Insert book details
+        bookdetail_id = db.execute(f"""
+            INSERT INTO BookDetail (bookName, yearPublished, isbn)
+            VALUES (?,?, ?)
+            """, (request.forms.get('bookName'), request.forms.get('yearPublished'), isbn)).lastrowid
+        
+        # Link authors, creating if necessary
+        for author_num in (1,2,3):
+            author = request.forms.get(f"author{str(author_num)}")
+            if author:
+                author_id = db.execute("""
+                    SELECT id from Author
+                    Where name = ?
+                    """, (author,)).fetchone()
+                if not author_id:
+                    author_id = db.execute(f"""
+                        INSERT INTO Author (name)
+                        VALUES (?)
+                        """, (author,)).lastrowid
+                else:
+                    author_id = author_id[0]
+                db.execute("""
+                    INSERT INTO BookDetailAuthor (bookId, authorId, orderPos)
+                    VALUES (?,?,?)
+                    """, (bookdetail_id, author_id, author_num))
+    else:
+        bookdetail_id = bookdetail_id[0]
+    
+    # Add new copy
+    db.execute("""
+                INSERT INTO HardCopy (bookId)
+                VALUES (?)
+                """, (bookdetail_id,))       
+    
+    return redirect(f"/book/{str(bookdetail_id)}")
+                        
 
 @get('/resource/<resource_id:int>', apply=[require_auth])
 def track_resource_access(db, resource_id, signin_status):
