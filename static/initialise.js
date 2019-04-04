@@ -119,3 +119,69 @@ $(function() {
         });
     }, false);
 })();
+
+function fetchDetails() {
+    let isbn = document.getElementById("isbn").value
+    if (!isbn) {
+        return;
+    }
+
+    let errorFn = function(msg) {
+        let button = document.getElementById("fetch-details");
+        console.log(button.classList);
+        button.classList.remove("btn-info");
+        button.classList.remove("btn-success");
+        button.classList.add("btn-danger");
+        if (msg) {
+            button.innerHTML = msg
+        }
+    };
+
+    console.log("Fetching details for: %o", isbn);
+
+    fetch('https://www.googleapis.com/books/v1/volumes?q=isbn:'+isbn)
+        .then(
+        function(response) {
+            if (response.status !== 200) {
+                console.log('Error fetching book details. Status Code: ' + response.status);
+                errorFn("Error");
+                return;
+            }
+
+            // Examine the text in the response
+            response.json().then(function(data) {
+                console.log("Fetched details for %s:\n %o", isbn, data);
+                if (!data.items){
+                    console.log("ISBN not found");
+                    errorFn("Not found");
+                    return;
+                }
+                let info = data.items[0].volumeInfo;
+                document.getElementById("bookName").value = info.title || "";
+                document.getElementById("author1").value = info.authors[0] || "";
+                document.getElementById("author2").value = info.authors[1] || "";
+                document.getElementById("author3").value = info.authors[2] || "";
+                document.getElementById("publisher").value = info.publisher || "";
+                document.getElementById("yearPublished").value = info.publishedDate.substring(0, 4) || "";
+                
+                if (document.getElementById("author2").value) {
+                    document.getElementById("author2-group").classList.remove("hidden");
+                }
+
+                if (document.getElementById("author3").value) {
+                    document.getElementById("author3-group").classList.remove("hidden");
+                }
+                
+                let button = document.getElementById("fetch-details");
+                button.classList.remove("btn-info");
+                button.classList.remove("btn-danger");
+                button.classList.add("btn-success");
+                button.innerHTML = "Found"
+            });
+        }
+        )
+        .catch(function(err) {
+            console.log("Error: %o", err)
+            errorFn("Error");
+        });
+}

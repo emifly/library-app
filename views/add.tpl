@@ -15,6 +15,20 @@
                     <h2 class="display-4 small-display">Add a new book or resource to the database</h2>
 
                     <form class="editable-details needs-validation" novalidate>
+
+                        <div class="form-group">
+                            <label for="isbn">ISBN</label>
+                            <input type="text" class="form-control" id="isbn" placeholder="ISBN" >
+                        </div>
+
+                        <div class="form-group">
+                            <button type="button" id="fetch-details" class="btn btn-info padded-button" onclick="fetchDetails()">
+                                Fetch details
+                            </button>
+                        </div>
+
+                        <hr />
+
                         <div class="form-group">
                             <label for="bookName">Book Name</label>
                             <input type="text" name="bookName" class="form-control" id="bookName" placeholder="Book Name" required>
@@ -70,11 +84,6 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="isbn">ISBN</label>
-                            <input type="text" class="form-control" id="isbn" placeholder="ISBN">
-                        </div>
-
                         <div class="custom-control custom-radio">
                             <input type="radio" name="resourceType" value="hardCopy" class="custom-control-input" id="hardCopy" name="radio-stacked" required>
                             <label class="custom-control-label" for="hardCopy">This is a hard copy</label>
@@ -86,7 +95,7 @@
                         </div>
 
                         <button type="submit" id="create-book" class="btn btn-info padded-button">Add this book</button>
-                        <button type="button" id="empty-form" class="btn btn-outline-info padded-button">Clear form</a>
+                        <button type="button" id="empty-form" class="btn btn-outline-info padded-button">Clear form</button>
                     </form>                 
 
                 </div> <!-- /container -->
