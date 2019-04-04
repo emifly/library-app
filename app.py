@@ -212,11 +212,11 @@ def display_book_page(db, book_id):
     return template('book', book=this_book, all_copies=all_copies, dbdate_to_date=dbdate_to_date, signin_status=Signin_Status(cookie_key))
 
 @get('/book/new', apply=[require_auth])
-def display_add_form():
+def display_add_form(db, signin_status):
     return template('add')
 
 @post('/book/new', apply=[require_auth])
-def add_book(db):
+def add_book(db, signin_status):
     isbn = request.forms.get('isbn')
 
     print('isbn')

@@ -1,4 +1,4 @@
-% rebase('base.tpl', is_signed_in=True)
+% rebase('base.tpl',   add_page=True, is_signed_in=True)
 
         <main role="main">
 
