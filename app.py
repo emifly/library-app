@@ -182,7 +182,24 @@ def display_search(db):
     # Otherwise, deal with the form data. NOTE: need to add validation here ideally
     else:
         results = ordered_results(request, db)
-        return template('search', signin_status=Signin_Status(cookie_key), request=request, results=[Book(row['id'], db) for row in results])
+        result_ids = [result["id"] for result in results]
+        avail_resp = db.execute(
+            f"""
+            SELECT
+                BookDetail.id,
+                COUNT(DISTINCT HardCopy.id) as copies,
+                COUNT(DISTINCT HardCopy.id) - ( COUNT(Loan.dateBorrowed)-COUNT(Loan.dateReturned) ) as available FROM BookDetail
+            LEFT JOIN HardCopy on HardCopy.bookId = BookDetail.id 
+            LEFT JOIN Loan on Loan.hardCopyId = HardCopy.id
+            WHERE BookDetail.id IN ({",".join("?" for _ in result_ids)})
+            GROUP BY BookDetail.id
+            """, result_ids).fetchall()
+        avail_details = {int(result['id']): {'copies': result['copies'],
+                                        'available': result['available']} 
+                            for result in avail_resp}
+        return template('search', signin_status=Signin_Status(cookie_key), request=request,
+                            results=[Book(row['id'], db) for row in results],
+                            avail_details=avail_details)
 
 @get('/book/<book_id:int>')
 def display_book_page(db, book_id):
