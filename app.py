@@ -257,12 +257,25 @@ def add_book(db, signin_status):
                     VALUES (?,?,?)
                     """, (bookdetail_id, author_id, author_num))
 
-    # Add new copy
-    db.execute("""
-                INSERT INTO HardCopy (bookId)
-                VALUES (?)
-                """, (bookdetail_id,))       
-    
+    resource_type = request.forms.get('resourceType')
+    if resource_type == 'hardCopy':
+            # Add new copy
+        db.execute("""
+            INSERT INTO HardCopy (bookId)
+            VALUES (?)
+            """, (bookdetail_id,))
+    elif resource_type == 'onlineResource':
+        url = request.forms.get("url")
+        if not url:
+            return template('error', error_message="No url provided for online resource.", back_button=True, signin_status=signin_status)
+        db.execute("""
+            UPDATE BookDetail
+            SET url = ?
+            WHERE id = ?
+            """, (url, bookdetail_id))
+    else:
+        return template('error', error_message="Unrecognised resource type.", back_button=True, signin_status=signin_status)
+
     return redirect(f"/book/{str(bookdetail_id)}")
                         
 

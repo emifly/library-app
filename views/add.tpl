@@ -85,11 +85,11 @@
                         </div>
 
                         <div class="custom-control custom-radio">
-                            <input type="radio" name="resourceType" value="hardCopy" class="custom-control-input" id="hardCopy" name="radio-stacked" required>
+                            <input type="radio" name="resourceType" value="hardCopy" class="custom-control-input" id="hardCopy" name="radio-stacked" onclick="toggleURLField(false)" required>
                             <label class="custom-control-label" for="hardCopy">This is a hard copy</label>
                         </div>
                         <div class="custom-control custom-radio mb-3">
-                            <input type="radio" name="resourceType" value="onlineResource" class="custom-control-input" id="onlineResource" name="radio-stacked" required>
+                            <input type="radio" name="resourceType" value="onlineResource" class="custom-control-input" id="onlineResource" name="radio-stacked" onclick="toggleURLField(true)" required>
                             <label class="custom-control-label" for="onlineResource">This is an online resource</label>
                             <div class="invalid-feedback">Please indicate the type of resource.</div>
                         </div>

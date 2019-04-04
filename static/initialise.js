@@ -195,5 +195,4 @@ function toggleURLField(activate) {
         document.getElementById("url-group").classList.add("hidden")
         document.getElementById("url").required = false;
     }
-    }
 }
