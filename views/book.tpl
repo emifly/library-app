@@ -54,17 +54,17 @@
                                         <tr>
                                             <td>{{ copy['copyId'] }}</td>
                                             <td>
-                                                % if copy['dateReturned'] or not copy['dateBorrowed']:
+                                                % if signin_status.id and copy['borrowerId'] == int(signin_status.id):
+                                                    <a href="/account">
+                                                        <button type="button" class="btn btn-warning">{{ "Yours, due " + dbdate_to_date(copy['dateDue']).strftime("%d %B %Y")  }}</button>
+                                                    </a>
+                                                % elif copy['borrowerId']:
+                                                    <button type="button" class="btn btn-secondary disabled" disabled>{{ "Due back " + dbdate_to_date(copy['dateDue']).strftime("%d %B %Y")  }}</button>
+                                                % else:
                                                     <form action="/renew" method="POST"  class="book-actions">
                                                         <input name="copy_id" type="hidden" value="{{ copy['copyId'] }}">
                                                         <button type="submit" class="btn btn-success">Issue book</button>
                                                     </form>
-                                                % elif signin_status.id and copy['borrowerId'] == int(signin_status.id):
-                                                    <a href="/account">
-                                                        <button type="button" class="btn btn-warning">{{ "Yours, due " + dbdate_to_date(copy['dateDue']).strftime("%d %B %Y")  }}</button>
-                                                    </a>
-                                                % else:
-                                                    <button type="button" class="btn btn-secondary disabled" disabled>{{ "Due back " + dbdate_to_date(copy['dateDue']).strftime("%d %B %Y")  }}</button>
                                                 % end
                                             </td>
                                         </tr>
