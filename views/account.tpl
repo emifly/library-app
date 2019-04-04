@@ -69,10 +69,8 @@
                         </tbody>
                     </table>
 
-                    % if defined('access_log'):
-                        <div class="row" style="width: 100%">
-                            <div class="col-lg-6">
-                    % end
+                        <div class="d-flex flex-wrap-reverse justify-content-between" style="width: 100%">
+                            <div style="flex: 1 0 auto">
                                 <h2 class="display-4 small-display">Your account details</h2>
                                 <form class="editable-details" method="post">
                                     <div class="form-group row">
@@ -160,8 +158,7 @@
                     % if defined('access_log'):
                                 <hr class="sm-appear">
                             </div>
-                            <div class="col-lg-1 spacer-col"></div>
-                            <div class="col-lg-5">
+                            <div style="flex: 1 0 50%">
                                 <h2 class="display-4 small-display">Recent online access</h2>
                                 <table class="table table-info-striped">
                                     <thead>
