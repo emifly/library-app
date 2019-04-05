@@ -14,6 +14,8 @@ import calendar
 from bottle import get, post, error, run, debug, install, request, response, redirect, template, static_file
 from bottle_utils.flash import message_plugin
 from bottle_sqlite import SQLitePlugin
+from string import digits
+from itertools import cycle
 install(message_plugin)
 install(SQLitePlugin(dbfile=db_file))
 cookie_key = "1234567890987654321"
@@ -222,9 +224,15 @@ def display_add_form(db, signin_status):
 
 @post('/book/new', apply=[require_auth])
 def add_book(db, signin_status):
-    isbn = request.forms.get('isbn')
-    if not isbn:
-        return template('error', error_message="Cannot add book without an ISBN.", back_button=True, signin_status=signin_status)
+    isbn = "".join([c for c in request.forms.get('isbn') if c in digits])
+    isbn_digits = [int(c) for c in isbn]
+    if len(isbn_digits) != 13:
+        return  template('error', error_message="Please use the 13 digit ISBN.", back_button=True, signin_status=signin_status)
+    
+    isbn_checksum = sum(x * y for x, y in zip(isbn_digits, cycle([1,3]))) % 10
+
+    if isbn_checksum != 0:
+        return template('error', error_message="ISBN failed checksum.", back_button=True, signin_status=signin_status)
 
     bookdetail_id = db.execute("""
         SELECT id FROM BookDetail

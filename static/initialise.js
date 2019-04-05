@@ -134,17 +134,36 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 });
 
-function fetchDetails() {
-    let isbn = document.getElementById("isbn").value
-    if (!isbn) {
-        return;
-    }
+function filterISBN(isbn) {
+    return isbn
+            .split('')
+            .filter(c => "0123456789".includes(c))
+            .join('');
+}
 
+function passesISBNChecksum(isbn) {
+    return filterISBN(isbn)
+            .split('')
+            .map((c, i) => Number(c) * ( (i % 2) ? 3 : 1) )
+            .reduce((a, b) => a + b, 0) % 10 == 0;
+}
+
+function fetchDetails() {
     let button = document.getElementById("fetch-details");
     function updateButton(newClass, message) {
         button.classList.remove("btn-info", "btn-success", "btn-danger", "btn-light");
         button.classList.add(newClass);
         button.innerHTML = message;
+    }
+
+    let isbn = filterISBN(document.getElementById("isbn").value)
+    if (isbn.length != 13) {
+        updateButton("btn-danger", "13 digit ISBN")
+        return;
+    }
+    if (!passesISBNChecksum(isbn)) {
+        updateButton("btn-danger", "Invalid ISBN")
+        return;
     }
 
     // If loading is slow, show it is working
