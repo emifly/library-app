@@ -120,6 +120,20 @@ $(function() {
     }, false);
 })();
 
+document.addEventListener("DOMContentLoaded", function(event) {
+    if (window.location.pathname == "/account") {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("highlight")) {
+            console.log("book-copy-id-" + urlParams.get('highlight'));
+            book_row = document.getElementById("book-copy-id-" + urlParams.get('highlight'));
+            console.log(book_row);
+            if (book_row != null) {
+                book_row.classList.add("highlight");
+            }
+        }
+    }
+});
+
 function fetchDetails() {
     let isbn = document.getElementById("isbn").value
     if (!isbn) {
@@ -196,3 +210,4 @@ function toggleURLField(activate) {
         document.getElementById("url").required = false;
     }
 }
+

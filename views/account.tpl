@@ -26,7 +26,7 @@
                 </thead>
                 <tbody>
                     % for loan_item in active_loans:
-                        <tr>
+                        <tr id="book-copy-id-{{ loan_item['copy_id'] }}">
                             <!--<td style="text-align: right">{{ loan_item['copy_id'] }}</td>-->
                             <td style="text-align: left">
                                 <a href="/book/{{ loan_item['book_id'] }}" class="table-link">
