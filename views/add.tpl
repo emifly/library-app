@@ -36,7 +36,7 @@
                                 Please enter the name of the book.
                             </div>
                         </div>
-                        
+
                         <div id="authors">
                             <div class="form-group">
                             <label for="author1">Author</label>
@@ -104,7 +104,7 @@
 
                         <button type="submit" id="create-book" class="btn btn-info padded-button">Add this book</button>
                         <button type="button" id="empty-form" class="btn btn-outline-info padded-button">Clear form</button>
-                    </form>                 
+                    </form>
 
                 </div> <!-- /container -->
 

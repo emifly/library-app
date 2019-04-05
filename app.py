@@ -191,13 +191,13 @@ def display_search(db):
                 BookDetail.id,
                 COUNT(DISTINCT HardCopy.id) as copies,
                 COUNT(DISTINCT HardCopy.id) - ( COUNT(Loan.dateBorrowed)-COUNT(Loan.dateReturned) ) as available FROM BookDetail
-            LEFT JOIN HardCopy on HardCopy.bookId = BookDetail.id 
+            LEFT JOIN HardCopy on HardCopy.bookId = BookDetail.id
             LEFT JOIN Loan on Loan.hardCopyId = HardCopy.id
             WHERE BookDetail.id IN ({",".join("?" for _ in result_ids)})
             GROUP BY BookDetail.id
             """, result_ids).fetchall()
         avail_details = {int(result['id']): {'copies': result['copies'],
-                                        'available': result['available']} 
+                                        'available': result['available']}
                             for result in avail_resp}
         return template('search', signin_status=Signin_Status(cookie_key), request=request,
                             results=[Book(row['id'], db) for row in results],
@@ -228,7 +228,7 @@ def add_book(db, signin_status):
     isbn_digits = [int(c) for c in isbn]
     if len(isbn_digits) != 13:
         return  template('error', error_message="Please use the 13 digit ISBN.", back_button=True, signin_status=signin_status)
-    
+
     isbn_checksum = sum(x * y for x, y in zip(isbn_digits, cycle([1,3]))) % 10
 
     if isbn_checksum != 0:
@@ -248,7 +248,7 @@ def add_book(db, signin_status):
             INSERT INTO BookDetail (bookName, yearPublished, isbn)
             VALUES (?,?, ?)
             """, (request.forms.get('bookName'), request.forms.get('yearPublished'), isbn)).lastrowid
-        
+
         # Link authors, creating if necessary
         for author_num in (1,2,3):
             author = request.forms.get(f"author{str(author_num)}")
@@ -264,7 +264,7 @@ def add_book(db, signin_status):
                         INSERT INTO Author (name)
                         VALUES (?)
                         """, (author,)).lastrowid
-                    
+
                 db.execute("""
                     INSERT INTO BookDetailAuthor (bookId, authorId, orderPos)
                     VALUES (?,?,?)
@@ -290,7 +290,7 @@ def add_book(db, signin_status):
         return template('error', error_message="Unrecognised resource type.", back_button=True, signin_status=signin_status)
 
     return redirect(f"/book/{str(bookdetail_id)}")
-                        
+
 
 @get('/resource/<resource_id:int>', apply=[require_auth])
 def track_resource_access(db, resource_id, signin_status):

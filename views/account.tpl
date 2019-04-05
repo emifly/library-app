@@ -68,7 +68,7 @@
                     % end
                 </tbody>
             </table>
-            
+
             <div class="d-flex justify-content-between flex-row-reverse flex-wrap" style="width: 100%">
                     % if defined('access_log'):
                     <div style="flex: 1 0 50%">
@@ -86,7 +86,7 @@
                                     <td>{{ logitem['date'] }}</td>
                                     <td>
                                         % if logitem['url']:
-                                            <a href={{ logitem['url'] }}>{{ logitem['bookname'] }}</a> 
+                                            <a href={{ logitem['url'] }}>{{ logitem['bookname'] }}</a>
                                         % else:
                                             {{ logitem['bookname'] }}
                                             <br />
@@ -184,10 +184,10 @@
                         <button type="submit" id="submit" class="hidden btn btn-info padded-button">Save changes</button>
                         <a role="button" id="cancel" class="hidden btn btn-outline-info padded-button" href="/account">Cancel</a>
                     </form>
-        
+
                 </div>
             </div>
-            
+
         </div> <!-- /container -->
 
     </div>

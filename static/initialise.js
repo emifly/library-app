@@ -18,7 +18,7 @@ $(function() {
     var topbtn = document.getElementById('nav-btn');
     var signoutbtn = document.getElementById('signout-btn');
 
-    if (window.pageYOffset >= 10) {        
+    if (window.pageYOffset >= 10) {
         topnav.classList.add('blue-white-nav');
         topnav.classList.remove('transparent-nav');
         toggleButtonTheme(topbtn, false);
@@ -29,7 +29,7 @@ $(function() {
     $('.back-button').on('click', function() {
         window.history.back();
     });
-    
+
     // Set up slick carousel
     $('.news-slider').slick({
         dots: true,
@@ -193,7 +193,7 @@ function fetchDetails() {
             fillForm("author3", info.authors[2]);
             fillForm("publisher", info.publisher);
             fillForm("yearPublished", info.publishedDate.substring(0,4));
-            
+
             $("#author2-group").toggleClass("hidden", $("#author2").val() == "")
             $("#author3-group").toggleClass("hidden", $("#author3").val() == "")
 
@@ -211,7 +211,7 @@ function fetchDetails() {
         .finally(function() {
             clearTimeout(indicateLoading);
         });
-    
+
     document.getElementById("isbn").oninput = function() {
         updateButton("btn-info", "Fetch details")
     }

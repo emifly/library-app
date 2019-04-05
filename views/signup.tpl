@@ -3,11 +3,11 @@
         <main role="main">
 
             <div class="container text-center" style="padding-top: 120px">
-                <h2 class="display-4" id="quick-search">Fill in the details below to sign up.</h2>  
+                <h2 class="display-4" id="quick-search">Fill in the details below to sign up.</h2>
                 <form class="sign-in-form" action="/confirmation" method="post">
-                    
-                       
-                    
+
+
+
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text prepend-icon" id="basic-addon1"><i class="fas fa-user-alt"></i></span>

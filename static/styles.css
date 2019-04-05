@@ -56,17 +56,17 @@ button.btn.dropdown-toggle.btn-outline-info {
 }
 
 .dropdown-item.active, .dropdown-item.active:active {
-    background-color: #17a2b8;    
+    background-color: #17a2b8;
     color: white;
 }
-    
+
 a:not([role=button]).dropdown-item:active {
     background-color: #17a2b8;
 }
-    
+
 .dropdown-item.active:hover, .dropdown-item.active:focus, .dropdown-item:focus, a:not([role=button]).dropdown-item:active {
     color: #f0f2f4;
-}    
+}
 
 button.btn.dropdown-toggle.btn-outline-info {
     border-top-right-radius: 0;

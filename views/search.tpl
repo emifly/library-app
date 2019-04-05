@@ -42,7 +42,7 @@
 
                 % if defined('results'):
                     <hr class="section-divider">
-                    
+
                     % if len(results) == 0:
                         <p><span class="lead" style="font-weight: normal">There were no results. </span>Please try changing your search query.</p>
                     % else:
@@ -71,14 +71,14 @@
                                         % end
                                     </div>
                                 </div>
-                                <small class="text-muted">To come: publisher, location, year published</small>                            
+                                <small class="text-muted">To come: publisher, location, year published</small>
                             </a>
                         % end
                         </div>
                     % end
 
                 % end
-                
+
             </div> <!-- /container -->
 
             </div>
