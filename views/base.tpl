@@ -46,15 +46,17 @@
                     <li class="nav-item {{"active" if defined('search_page') else ""}}"><a class="nav-link" href="/search">Search</a></li>
                     <li class="nav-item {{"active" if defined('contact_page') else ""}}"><a class="nav-link" href="/contact">Contact</a></li>
                     % if get('is_signed_in', False):
-                    <li class="nav-item {{"active" if defined('add_page') else ""}}"><a class="nav-link" href="/book/new">Add book</a></li>
+                    <li class="nav-item {{"active" if defined('add_page') else ""}}"><a class="nav-link" href="/book/new">Add Book</a></li>
                     % end
                 </ul>
-                % if get('disp_signin', False):
-                    <a role="button" id="nav-btn" class="btn btn-outline-info my-2 my-sm-0 sm-hide" href="/account">{{ btn_text }}</a>
-                % end
-                % if get('is_signed_in', False):
-                    <a role="button" id="signout-btn" class="btn btn-outline-info my-2 my-sm-0 sm-hide" href="/signout">Sign out</a>
-                % end
+                <div class="my-2 my-md">
+                    % if get('disp_signin', False):
+                        <a role="button" id="nav-btn" class="btn btn-outline-info my-2 my-sm-0 sm-hide" href="/account">{{ btn_text }}</a>
+                    % end
+                    % if get('is_signed_in', False):
+                        <a role="button" id="signout-btn" class="btn btn-outline-info my-2 my-sm-0 sm-hide" href="/signout">Sign out</a>
+                    % end
+                </div>
             </div>
         </nav>
 
