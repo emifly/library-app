@@ -126,64 +126,66 @@ function fetchDetails() {
         return;
     }
 
-    let errorFn = function(msg) {
-        let button = document.getElementById("fetch-details");
-        console.log(button.classList);
-        button.classList.remove("btn-info");
-        button.classList.remove("btn-success");
-        button.classList.add("btn-danger");
-        if (msg) {
-            button.innerHTML = msg
-        }
-    };
+    let button = document.getElementById("fetch-details");
+    function updateButton(newClass, message) {
+        button.classList.remove("btn-info", "btn-success", "btn-danger", "btn-light");
+        button.classList.add(newClass);
+        button.innerHTML = message;
+    }
 
-    console.log("Fetching details for: %o", isbn);
+    // If loading is slow, show it is working
+    indicateLoading = setTimeout(function(){
+        updateButton("btn-light", "Loading...");
+    }, 500);
 
     fetch('https://www.googleapis.com/books/v1/volumes?q=isbn:'+isbn)
         .then(
         function(response) {
             if (response.status !== 200) {
-                console.log('Error fetching book details. Status Code: ' + response.status);
-                errorFn("Error");
-                return;
+                throw "req-error";
+            }
+            return response.json()
+        }).then(function(data) {
+            if (!data.items){
+                throw "isbn-not-found";
+            }
+            let info = data.items[0].volumeInfo;
+
+            function fillForm(formID, value) {
+                document.getElementById(formID).value = value || "";
+            }
+            fillForm("bookName", info.title);
+            fillForm("author1", info.authors[0]);
+            fillForm("author2", info.authors[1]);
+            fillForm("author3", info.authors[2]);
+            fillForm("publisher", info.publisher);
+            fillForm("yearPublished", info.publishedDate.substring(0,4));
+            
+            if (document.getElementById("author2").value) {
+                document.getElementById("author2-group").classList.remove("hidden");
+            }
+            if (document.getElementById("author3").value) {
+                document.getElementById("author3-group").classList.remove("hidden");
             }
 
-            // Examine the text in the response
-            response.json().then(function(data) {
-                console.log("Fetched details for %s:\n %o", isbn, data);
-                if (!data.items){
-                    console.log("ISBN not found");
-                    errorFn("Not found");
-                    return;
-                }
-                let info = data.items[0].volumeInfo;
-                document.getElementById("bookName").value = info.title || "";
-                document.getElementById("author1").value = info.authors[0] || "";
-                document.getElementById("author2").value = info.authors[1] || "";
-                document.getElementById("author3").value = info.authors[2] || "";
-                document.getElementById("publisher").value = info.publisher || "";
-                document.getElementById("yearPublished").value = info.publishedDate.substring(0, 4) || "";
-                
-                if (document.getElementById("author2").value) {
-                    document.getElementById("author2-group").classList.remove("hidden");
-                }
-
-                if (document.getElementById("author3").value) {
-                    document.getElementById("author3-group").classList.remove("hidden");
-                }
-                
-                let button = document.getElementById("fetch-details");
-                button.classList.remove("btn-info");
-                button.classList.remove("btn-danger");
-                button.classList.add("btn-success");
-                button.innerHTML = "Found"
-            });
-        }
-        )
+            updateButton("btn-success", "Found");
+        })
         .catch(function(err) {
-            console.log("Error: %o", err)
-            errorFn("Error");
+            if (err == "isbn-not-found") {
+                message = "Not found";
+            }
+            else {
+                message = "Error";
+            }
+            updateButton("btn-danger", message);
+        })
+        .finally(function() {
+            clearTimeout(indicateLoading);
         });
+    
+    document.getElementById("isbn").oninput = function() {
+        updateButton("btn-info", "Fetch details")
+    }
 }
 
 function toggleURLField(activate) {
