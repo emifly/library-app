@@ -164,8 +164,14 @@ function fetchDetails() {
             if (document.getElementById("author2").value) {
                 document.getElementById("author2-group").classList.remove("hidden");
             }
+            else {
+                document.getElementById("author2-group").classList.add("hidden");
+            }
             if (document.getElementById("author3").value) {
                 document.getElementById("author3-group").classList.remove("hidden");
+            }
+            else {
+                document.getElementById("author3-group").classList.add("hidden");
             }
 
             updateButton("btn-success", "Found");
