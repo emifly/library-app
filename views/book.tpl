@@ -55,7 +55,7 @@
                                             <td>{{ copy['copyId'] }}</td>
                                             <td>
                                                 % if signin_status.id and copy['borrowerId'] == int(signin_status.id):
-                                                    <a href="/account">
+                                                    <a href="/account?highlight={{ copy['copyId'] }}">
                                                         <button type="button" class="btn btn-warning">{{ "Yours, due " + dbdate_to_date(copy['dateDue']).strftime("%d %B %Y")  }}</button>
                                                     </a>
                                                 % elif copy['borrowerId']:
