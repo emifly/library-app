@@ -210,7 +210,9 @@ def display_book_page(db, book_id):
         LEFT JOIN (SELECT * FROM LOAN WHERE dateReturned IS NULL ) -- unreturned books
             ON hardCopyId = HardCopy.id
         WHERE HardCopy.bookId = ?
-        ORDER BY copyId ASC
+        ORDER BY
+            dateDue ASC,
+            copyId ASC
         """, (this_book.id,)).fetchall()
     return template('book', book=this_book, all_copies=all_copies, dbdate_to_date=dbdate_to_date, signin_status=Signin_Status(cookie_key))
 
