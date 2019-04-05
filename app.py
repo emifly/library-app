@@ -320,7 +320,7 @@ def issue_renew_book(db, signin_status):
             return template('error', error_message="Already renewed as long as possible for today.", signin_status=signin_status)
 
         renew_copy(db, copy_id, renew_date)
-        return redirect('/account')
+        return redirect(f'/account?highlight={copy_id}')
     else:
          # Not currently on loan
         if get_user_loan_count(db, user_id) >= MAX_ON_LOAN:
@@ -328,7 +328,7 @@ def issue_renew_book(db, signin_status):
         if get_user_related_copy_count(db, user_id, copy_id) >= 1:
             return template('error', error_message="You already have a copy of this book on loan.", signin_status=signin_status)
         issue_copy_to_user(db, user_id, copy_id, calculate_due_date(LOAN_PERIOD))
-        return redirect('/account')
+        return redirect(f'/account?highlight={copy_id}')
 
 
 @post('/return', apply=require_auth)
