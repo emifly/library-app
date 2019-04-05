@@ -175,18 +175,8 @@ function fetchDetails() {
             fillForm("publisher", info.publisher);
             fillForm("yearPublished", info.publishedDate.substring(0,4));
             
-            if (document.getElementById("author2").value) {
-                document.getElementById("author2-group").classList.remove("hidden");
-            }
-            else {
-                document.getElementById("author2-group").classList.add("hidden");
-            }
-            if (document.getElementById("author3").value) {
-                document.getElementById("author3-group").classList.remove("hidden");
-            }
-            else {
-                document.getElementById("author3-group").classList.add("hidden");
-            }
+            $("#author2-group").toggleClass("hidden", $("#author2").val() == "")
+            $("#author3-group").toggleClass("hidden", $("#author3").val() == "")
 
             updateButton("btn-success", "Found");
         })
